@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { Label } from "../Label";
 
@@ -9,7 +9,7 @@ AccordionItem,
 AccordionTrigger,
 } from '@/components/Accordion';
 
-export default async function DeviceList() {
+export default function DeviceList() {
     const [devices, setDevices] = useState('[]');
         useEffect(() => {
             async function getData() {

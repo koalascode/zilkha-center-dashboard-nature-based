@@ -2,11 +2,15 @@ import { getYesterdaysEnergyTotals, getFullAuthTokenDict } from "@/app/actions";
 import { sensors } from "@/app/data/sensors"
 
 export async function GET(req: Request) {
+    
     const tokens = await getFullAuthTokenDict();
     let totals: {time: string, power: number}[] = []
-    
+    console.log("SENSORS: ")
     // Go through all sensor URLs
     for (let i = 0; i < sensors.length; i++) {
+        if (sensors[i].number.toString().slice(0,2) === "20") { 
+            continue;
+        }
         const temp = await getYesterdaysEnergyTotals(sensors[i].number.toString(), tokens.get(sensors[i].number));
         
         // If totals has not been initialized, initialize it

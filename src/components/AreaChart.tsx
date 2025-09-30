@@ -47,6 +47,7 @@ const LegendItem = ({
   activeLegend,
 }: LegendItemProps) => {
   const hasOnValueChange = !!onClick
+
   return (
     <li
       className={cx(
@@ -389,6 +390,7 @@ const ChartTooltip = ({
   valueFormatter,
 }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
+    payload = payload.sort((a, b) => b.value - a.value);
     return (
       <div
         className={cx(
@@ -642,6 +644,11 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
       setActiveDot(undefined)
     }
 
+ 
+
+// Step 1: Filter out non-numeric values and convert to array
+
+
     return (
       <div
         ref={ref}
@@ -843,6 +850,7 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
                     </linearGradient>
                   </defs>
                   <Area
+                    
                     className={cx(
                       getColorClassName(
                         categoryColors.get(

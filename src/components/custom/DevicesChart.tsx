@@ -93,6 +93,8 @@ const valueFormatter = function (number: number | bigint) {
 
 export function DevicesChart() {
     const [d, setData] = useState({data: [{time: '1:00', device: 29 }], names: ['device']});
+    console.log("DATA:", d)
+    
     const [value, setValue] = useState(sensors[0].number.toString())
         useEffect(() => {
             async function getData() {

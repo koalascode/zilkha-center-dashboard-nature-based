@@ -5,10 +5,17 @@ import { sensors } from "@/app/data/sensors";
 // Gets the JSON Web Token (JWT) for authentication purposes,
 // following eGauge Web API instructions
 export async function getAuthToken(deviceNumber: string) {
+    if (deviceNumber.slice(0,2) === "20") {
+        return "notoken";
+    }
     const URL = `https://egauge${deviceNumber}.d.egauge.net/api`
     // Get the 'unauthorized' response
+    console.log('URL: ', URL)
+
     const unauthorized_data = await fetch(`${URL}/auth/unauthorized`);
     const unauthorized_data_json = await unauthorized_data.json();
+
+    console.log("UNAUTH DATA: ", unauthorized_data_json)
 
     // Get the realm and server nonce (valid for 1 min)
     const realm = unauthorized_data_json.rlm;
@@ -46,11 +53,16 @@ export async function getAuthToken(deviceNumber: string) {
 // Builds a dictionary of all JWTs and corresponding url numbers
 export async function getFullAuthTokenDict() {
     let tokens = new Map();
+
+   
     
     for (let i = 0; i < sensors.length; i++) {
         const token = await getAuthToken(sensors[i].number.toString());
-        tokens.set(sensors[i].number, token);
+        if (token !== "notoken") {
+            tokens.set(sensors[i].number, token);
+        }
     }
+
 
     return tokens;
 }
@@ -76,9 +88,11 @@ export async function extractRegisters(deviceNumber: string, JWT: string) {
 export async function getDeviceData(deviceNumber: string, JWT: string) {
     const URL = `https://egauge${deviceNumber}.d.egauge.net/api`
     const bearer = 'Bearer ' + JWT;
-
+    
     // Start time is start of day yesterday, step by 1h, end time is start of current hour
     const time = 'sod(now):1h:soh(now)'
+    console.log("HERHERHEHREHRHERHEHR")
+    console.log("FETCH URL: " + `${URL}/register?reg=all&time=${time}&delta=true`)
 
     const response = await fetch(`${URL}/register?reg=all&time=${time}&delta=true`, {
     method: 'GET',
@@ -90,6 +104,7 @@ export async function getDeviceData(deviceNumber: string, JWT: string) {
 
     const names = response.registers.map((val: any) => {return val.name})
     const ranges = convertPowerRanges(response.ranges);
+
 
     return {names: names, ranges: ranges};
 }

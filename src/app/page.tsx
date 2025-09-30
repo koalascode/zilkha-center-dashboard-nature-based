@@ -4,8 +4,11 @@ import DeviceList from "@/components/custom/DeviceList";
 import { ExplanationCard } from "@/components/custom/ExplanationCard";
 import { DayTotalsChart } from "@/components/custom/DayTotalsChart";
 import { DevicesChart } from "@/components/custom/DevicesChart";
+import { getDeviceData } from "./actions";
+
 
 export default function Home() {
+
   return (
     <div className="bg-blue-50 bg-cover min-h-svh">
       <aside className="lg:w-64 lg:fixed lg:inset-y-0 lg:flex lg:flex-col flex grow flex-col gap-y-4 overflow-y-auto whitespace-nowrap px-3 py-4">

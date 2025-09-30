@@ -2,10 +2,16 @@ import { extractRegisters, getFullAuthTokenDict } from "@/app/actions";
 import { sensors } from "@/app/data/sensors"
 
 export async function GET(req: Request) {
+    // In devices works
     const tokens = await getFullAuthTokenDict();
+
     let registers = []
 
     for (let i = 0; i < sensors.length; i++) {
+        // Not using sensors that are currently broken
+        if (sensors[i].number.toString().slice(0,2) === "20") { 
+            continue;
+        }
         const temp = await extractRegisters(sensors[i].number.toString(), tokens.get(sensors[i].number));
         registers.push({
             sensor: sensors[i],

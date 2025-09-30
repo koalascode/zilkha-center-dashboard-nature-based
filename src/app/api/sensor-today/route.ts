@@ -8,9 +8,11 @@ export async function GET(req: Request) {
     if (id === null) {
         return new Response('Provide URL ID', { status: 400 });
     }
-    
+
     const JWT = await getAuthToken(id);
     const data = await getDeviceData(id, JWT);
+
+    console.log("data returned: ", data)
 
     // We need to map device names to their values to make the chart visualization easier
     var dictionary = data.ranges.map(function(row) {
