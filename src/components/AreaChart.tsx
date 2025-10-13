@@ -945,7 +945,7 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
                       }
                       return <React.Fragment key={index}></React.Fragment>
                     }}
-                    key={category}
+                    key={categoryId}
                     name={category}
                     type="linear"
                     dataKey={category}

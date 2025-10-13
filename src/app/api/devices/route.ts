@@ -1,11 +1,13 @@
 import { extractRegisters, getFullAuthTokenDict } from "@/app/actions";
 import { sensors } from "@/app/data/sensors"
 
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(req: Request) {
     // In devices works
     const tokens = await getFullAuthTokenDict();
 
-    let registers = []
+    const registers = []
 
     for (let i = 0; i < sensors.length; i++) {
         // Not using sensors that are currently broken

@@ -1,10 +1,9 @@
 "use client"
-import React, { Suspense, useState } from "react"
+import React, { Suspense } from "react"
 import DeviceList from "@/components/custom/DeviceList";
 import { ExplanationCard } from "@/components/custom/ExplanationCard";
 import { DayTotalsChart } from "@/components/custom/DayTotalsChart";
 import { DevicesChart } from "@/components/custom/DevicesChart";
-import { getDeviceData } from "./actions";
 
 
 export default function Home() {

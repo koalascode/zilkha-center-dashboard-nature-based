@@ -1,6 +1,7 @@
 import { md5 } from "js-md5";
 import { USER, PASS } from "@/app/login"
 import { sensors } from "@/app/data/sensors";
+import { randomBytes } from 'crypto';
 
 // Gets the JSON Web Token (JWT) for authentication purposes,
 // following eGauge Web API instructions
@@ -22,7 +23,6 @@ export async function getAuthToken(deviceNumber: string) {
     const nnc = unauthorized_data_json.nnc;
 
     // Generate the client nonce
-    const { randomBytes } = require('crypto');
     const cnnc = randomBytes(64).toString('hex');
 
     // Hash login info
@@ -52,7 +52,7 @@ export async function getAuthToken(deviceNumber: string) {
 
 // Builds a dictionary of all JWTs and corresponding url numbers
 export async function getFullAuthTokenDict() {
-    let tokens = new Map();
+    const tokens = new Map();
 
    
     
@@ -113,13 +113,11 @@ export async function getDeviceData(deviceNumber: string, JWT: string) {
 // Takes the ranges array from a sensor response, returns array of time-power objects, where power could be an array
 export function convertPowerRanges(ranges: Array<any>) : Array<any> {
   const list = [];
-  var timestamp = ranges[0].ts // Get the start timestamp
-  const d = new Date(timestamp * 1000);
-
+  let timestamp = ranges[0].ts // Get the start timestamp
   for (const item of ranges[0].rows.slice(1)) { // Slicing skips first value, where time isn't a delta and power isn't instantaneous
     timestamp = timestamp - ranges[0].delta; // Account for the delta between timestamps
     const power = item.map((val: number) => {return Math.round(val / ranges[0].delta)}); // Get the instantaneous val from avg
-    const date = new Date(timestamp * 1000); // Convert timestamp into date
+   const date = new Date(timestamp * 1000); // Convert timestamp into date 
     list.push({time: date.toLocaleTimeString("en-US"), power: power});
   }
   
@@ -150,13 +148,11 @@ export async function getYesterdaysEnergyTotals(deviceNumber: string, JWT: strin
 // Takes the ranges array from a sensor response, returns array of time-power objects with summing
 export function convertPowerRangesToTotals(ranges: Array<any>) : Array<any> {
   const list = [];
-  var timestamp = ranges[0].ts // Get the start timestamp
-  const d = new Date(timestamp * 1000);
-
+  let timestamp = ranges[0].ts // Get the start timestamp
   for (const item of ranges[0].rows.slice(1)) { // Slicing skips first value, where time isn't a delta and power isn't instantaneous
     timestamp = timestamp - ranges[0].delta; // Account for the delta between timestamps
-    const power = item.map((val: number) => {return Math.round(val / ranges[0].delta)}).reduce((partialSum: number, val: number) => partialSum + val, 0); // Get the instantaneous val from avg
     const date = new Date(timestamp * 1000); // Convert timestamp into date
+    const power = item.map((val: number) => {return Math.round(val / ranges[0].delta)}).reduce((partialSum: number, val: number) => partialSum + val, 0); // Get the instantaneous val from avg
     list.push({time: date.toLocaleTimeString("en-US"), power: power});
   }
   

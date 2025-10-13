@@ -1,6 +1,8 @@
 import { getYesterdaysEnergyTotals, getFullAuthTokenDict } from "@/app/actions";
 import { sensors } from "@/app/data/sensors"
 
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(req: Request) {
     
     const tokens = await getFullAuthTokenDict();
@@ -25,7 +27,7 @@ export async function GET(req: Request) {
     // Split the totals array into yesterday and today
     const yesterday = totals.slice(0, 24);
     const today = totals.slice(24);
-    let res: {time: string, Today: number | null, Yesterday: number}[] = []
+    const res: {time: string, Today: number | null, Yesterday: number}[] = []
 
     // Combine their values
     for (let i = 0; i < yesterday.length; i++) {

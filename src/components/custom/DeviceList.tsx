@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Label } from "../Label";
 
 import {
 Accordion,
@@ -23,12 +22,12 @@ export default function DeviceList() {
         <div>
             <Accordion type="single" className="mx-auto mt-3 max-w-sm" collapsible>
                 {JSON.parse(devices).map((record: any) => {
-                    return <AccordionItem value={record.sensor.number}>
+                    return <AccordionItem value={record.sensor.number} key={record.sensor.number}>
                     <AccordionTrigger className="font-semibold">{record.sensor.name}</AccordionTrigger>
                     <AccordionContent>
                         <ol className="flex flex-col gap-2">
                             {record.registers.map((register: any) => {
-                                return <li>
+                                return <li key={register.name}>
                                     {register.name}
                                 </li>
                             })}

@@ -8,6 +8,7 @@ const valueFormatter = function (number: number | bigint) {
 
 export function DayTotalsChart() {
     const [data, setData] = useState([{hour: '1:00', Yesterday: 0}]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [sum, setSum] = useState(0);
 
     useEffect(() => {

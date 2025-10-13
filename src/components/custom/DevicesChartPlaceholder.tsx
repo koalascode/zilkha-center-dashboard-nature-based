@@ -84,7 +84,7 @@ const valueFormatter = function (number: number | bigint) {
 export function DeviceChart() {
   return (
     <>
-    <h3 className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">Devices' Energy Use</h3>
+    <h3 className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">Devices&apos; Energy Use</h3>
       <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold"></p>
     <AreaChart
         className="mt-4 h-72"

@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     console.log("data returned: ", data)
 
     // We need to map device names to their values to make the chart visualization easier
-    var dictionary = data.ranges.map(function(row) {
+    const dictionary = data.ranges.map(function(row) {
         // We map names to values, then add a time to each object
         const r = row.power.reduce(function(result: { [x: string]: any; }, field: any, index: string | number) {
                 result[data.names[index]] = field;
