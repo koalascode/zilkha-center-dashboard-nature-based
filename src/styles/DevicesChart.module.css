@@ -1,0 +1,22 @@
+.subtextheader {
+    color: black;
+}
+
+.textandselecterdiv {
+    display: flex;
+    /* MAKE THE MAX GAP  */
+    gap: 57%
+}
+
+.sensorselector {
+    width: 30%;
+}
+
+@media (max-width: 500px) {
+    .textandselecterdiv {
+        display: flex;
+        /* MAKE THE MAX GAP  */
+        gap: 30%;
+        margin-top: 2rem;
+    }
+}

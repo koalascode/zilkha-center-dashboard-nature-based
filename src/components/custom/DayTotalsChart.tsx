@@ -1,6 +1,8 @@
 "use client"
 import { useEffect, useState } from "react";
 import { AreaChart } from "../AreaChart";
+import styles from "../../styles/Page.module.css"
+
 
 const valueFormatter = function (number: number | bigint) {
   return new Intl.NumberFormat('us').format(number).toString() + ' W';
@@ -25,7 +27,7 @@ export function DayTotalsChart() {
     }, []);
   return (
     <>
-    <h3 className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">Total Energy Use</h3>
+    <h3 className={styles.subtextheader}>Total Energy Use</h3>
     <AreaChart
         className="mt-4 h-75"
         data={data}

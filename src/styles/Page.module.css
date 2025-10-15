@@ -1,0 +1,32 @@
+.chartsmain {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    gap: 1rem;
+}
+
+.daytotalschart {
+    width: 100%;
+}
+
+
+@media (max-width: 500px) {
+   .chartsmain {
+        grid-template-columns: 100%;
+    } 
+}
+
+.subtextheader {
+    color: black;
+}
+
+.textheader {
+    text-align: center;
+    color: black;
+    margin: 0 auto;
+}
+
+
+.explainationcard {
+    display: block;
+    margin: auto 0;
+}

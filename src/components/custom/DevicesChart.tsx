@@ -1,6 +1,7 @@
 "use client"
 import { AreaChart } from '@/components/AreaChart';
 import { useEffect, useState } from 'react';
+import styles from "../../styles/DevicesChart.module.css"
 
 import {
   Select,
@@ -31,9 +32,9 @@ export function DevicesChart() {
         }, [value]);
   return (
     <>
-    <div className="grid grid-cols-4">
-          <h3 className="col-span-3 text-tremor-default text-tremor-content dark:text-dark-tremor-content">Devices&apos; Energy Use</h3>
-          <div className="flex flex-col gap-2 sm:flex-row">
+    <div className={styles.textandselecterdiv}>
+      <h3 className={styles.subtextheader}>Devices&apos; Energy Use</h3>
+      <div className={styles.sensorselector}>
         <Select defaultValue='{sensors[0].name}' value={value} onValueChange={setValue}>
           <SelectTrigger className="mx-auto h-10">
             <SelectValue placeholder="Select" aria-label={value} />
