@@ -60,6 +60,5 @@ export function DevicesChart() {
       />
     </>
       
-    
   );
 }
