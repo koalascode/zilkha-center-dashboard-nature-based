@@ -5,8 +5,7 @@ export default function Test() {
   
   return (
     <div>
-      
-      <Tree />
+      <Tree energyUsed={50000} maxEnergyUsage={100000} minEnergyUsage={0}/>
     </div>
   );
 }

@@ -1,0 +1,18 @@
+.tree_leaves {
+    transition: all 1s ease;
+}
+
+:global {
+  #leaf_layer3 {
+    transform: translateY(-10rem);
+  }
+}
+
+.dropped-leaf {
+    animation: slide-down 2s ease forwards;
+}
+
+@keyframes slide-down{
+    from { transform: translateX(0); }
+    to { transform: translateY(80%); }
+}
