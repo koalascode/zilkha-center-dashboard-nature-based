@@ -46,13 +46,15 @@ export default function Tree({energyUsed, maxEnergyUsage}: TreeProps) {
                 setDroppedIds(prev => [...prev, currLeafNum])
                 const timeSeconds = Math.log2(currLeafHeight) - 6
                 const leaf = document.getElementById("leaf_layer" + currLeafNum + "" + randomId) as HTMLElement;
-                leaf!.style.transition = `transform ${timeSeconds}s ease-out, fill ${timeSeconds}s ease-out`; 
+                const delayAmt = Math.random() * 5
+                const initialFill = leaf.getAttribute("fill") ?? "#93BE4B";
+                leaf!.style.fill = initialFill;
+                leaf!.style.transition = `transform ${timeSeconds}s ease-out ${delayAmt}s, fill ${timeSeconds}s ease-out ${delayAmt}s`; 
 
-                setTimeout(() => {
-                     leaf!.style.transform = `translateY(${currLeafHeight}px)`
-                     const fillColorRandom = Math.floor((Math.random() * 6))
-                     leaf!.style.fill = leafColors[fillColorRandom]
-                }, Math.random() * 2000)
+                leaf!.style.transform = `translateY(${currLeafHeight}px)`
+                const fillColorRandom = Math.floor((Math.random() * 6))
+                leaf!.style.fill = leafColors[fillColorRandom]
+
 
                 totalLengthSum -= currLeafPathSize   
                 currLeafIndx += 1
