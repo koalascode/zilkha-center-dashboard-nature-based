@@ -1,5 +1,7 @@
+
+
 .tree_leaves {
-    transition: all 1s ease;
+
 }
 
 :global {
@@ -9,10 +11,19 @@
 }
 
 .dropped-leaf {
-    animation: slide-down 2s ease forwards;
+
 }
 
 @keyframes slide-down{
     from { transform: translateX(0); }
-    to { transform: translateY(80%); }
+    /* to { transform: translateY(300px); } */
+}
+
+.trunk {
+  transform: trnaslateX(50rem);
+}
+
+.overalltree {
+  width: 30vw;
+  display: block;
 }

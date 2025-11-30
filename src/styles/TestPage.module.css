@@ -1,0 +1,15 @@
+.main {
+    display: flex;
+    background-color: whitesmoke;
+    height: 100vw;
+    color: black;
+    gap: 5rem;
+}
+
+.header {
+    font-size: 2rem;
+}
+
+.energyusep {
+    text-align: center;
+}

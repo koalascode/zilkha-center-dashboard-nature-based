@@ -6,6 +6,7 @@ import { DayTotalsChart } from "@/components/custom/DayTotalsChart";
 import { DevicesChart } from "@/components/custom/DevicesChart";
 import styles from "../styles/Page.module.css"
 
+
 export default function Home() {
 
   return (

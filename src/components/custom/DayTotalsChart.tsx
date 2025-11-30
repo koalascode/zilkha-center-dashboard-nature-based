@@ -20,6 +20,8 @@ export function DayTotalsChart() {
             setData(data);
             const cumulativeSum = data.map((val: {time: string, power: number}) => {return val.power}).reduce((partialSum: number, val: number) => partialSum + (val * 3600), 0)
             setSum(cumulativeSum);
+
+            console.log("DATACOLLECTED: ", data)
         }
         getData();
 
