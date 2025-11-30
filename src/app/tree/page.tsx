@@ -64,14 +64,14 @@ export default function Test() {
   return (
     <div className={styles.main}>
       <div>
+        <Tree energyUsed={200000 - 50000 - energyPercentDifferentialProd} maxEnergyUsage={200000}/>
+        <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
+      </div>
+      <div>
         <Tree energyUsed={200000 - 50000} maxEnergyUsage={200000}/>
         <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
       </div>
       
-      <div>
-        <Tree energyUsed={200000 - 50000 - energyPercentDifferentialProd} maxEnergyUsage={200000}/>
-        <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
-      </div>
     </div>
   );
 
