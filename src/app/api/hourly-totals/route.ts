@@ -23,8 +23,8 @@ export async function GET(req: Request) {
             totals = totals.map((val, i) => { return {time: val.time, power: val.power + temp[i].power}})
         }
     }
-
-    // Split the totals array into yesterday and today
+    
+    // Split the totals array into yesterday and today 
     const yesterday = totals.slice(0, 24);
     const today = totals.slice(24);
     const res: {time: string, Today: number | null, Yesterday: number}[] = []

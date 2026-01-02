@@ -1,5 +1,5 @@
 'use client';
-
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useId } from 'react';
 import styles from '../../styles/Tree.module.css'
 
@@ -11,12 +11,22 @@ type TreeProps = {
 
 export default function Tree({energyUsed, maxEnergyUsage}: TreeProps) {
     const [droppedIds, setDroppedIds] = React.useState<number[]>([]); 
+    //const [leafHover, setLeafHover] = React.useState<boolean>();
+
+    const setEnergyUsersDiv = (currState: boolean) => {
+        const energyDiv = document.getElementById("energyUsers") as HTMLElement;
+        if (currState) {
+            //energyDiv!.style.display = "block";
+        } else {
+            energyDiv!.style.display = "none";
+        }
+    }
 
     const randomId = useId()
 
     const leafColors = ["#8b5b33", "#aa6f3e", "#6a2205", "#a0693c", "#9f602e", "#6b3710"]
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         let totalLengthSum = 0
         const allLeafPaths = []
@@ -24,13 +34,16 @@ export default function Tree({energyUsed, maxEnergyUsage}: TreeProps) {
             for (let i = 1; i < 2072; i++) {
                 const leafLayer = document.getElementById(`leaf_layer${i}${randomId}`);
                 // @ts-expect-error ts wont shut up
-                const heightLoss = 1515 - parseInt(leafLayer.attributes.d.value.split(" ")[1])
+                const heightLoss = 1513 - parseInt(leafLayer.attributes.d.value.split(" ")[1])
+                // @ts-expect-error ts wont shut up
+                const middleOutDiff = 1 - (Math.abs(830 - parseInt(leafLayer.attributes.d.value.split(" ")[0].substring(1)))/900)/1.25;
+
                 // @ts-expect-error ts wont shut up
                 const leafPathLength = leafLayer?.getTotalLength();
-                allLeafPaths.push([leafPathLength, i, heightLoss]);
+                allLeafPaths.push([leafPathLength, i, heightLoss, middleOutDiff]);
                 totalLengthSum += leafPathLength;
             }
-            allLeafPaths.sort(function(a, b) {return a[0] - b[0];})
+            allLeafPaths.sort(function(a, b) {return (a[0]*a[3] - b[0]*b[3]);})
 
             
             const newTotalPathLength = (energyUsed/maxEnergyUsage) * totalLengthSum
@@ -49,7 +62,7 @@ export default function Tree({energyUsed, maxEnergyUsage}: TreeProps) {
                 const delayAmt = Math.random() * 5
                 const initialFill = leaf.getAttribute("fill") ?? "#93BE4B";
                 leaf!.style.fill = initialFill;
-                leaf!.style.transition = `transform ${timeSeconds}s ease-out ${delayAmt}s, fill ${timeSeconds}s ease-out ${delayAmt}s`; 
+                leaf!.style.transition = `transform ${timeSeconds}s ease-out ${delayAmt}s, fill ${timeSeconds}s ease-out ${delayAmt + 2}s`; 
 
                 leaf!.style.transform = `translateY(${currLeafHeight}px)`
                 const fillColorRandom = Math.floor((Math.random() * 6))
@@ -68,7 +81,7 @@ export default function Tree({energyUsed, maxEnergyUsage}: TreeProps) {
 
     return (
         <div>
-            <svg viewBox="0 0 1764 1519" fill="none" xmlns="http://www.w3.org/2000/svg" className={styles.overalltree}>
+            <svg viewBox="0 0 1764 1519" fill="none" xmlns="http://www.w3.org/2000/svg" className={styles.overalltree} onMouseEnter={() => setEnergyUsersDiv(true)} onMouseLeave={() => setEnergyUsersDiv(false)}>
             <g id="simplefigmatree 1" clipPath="url(#clip0_14_483)">
             <g id="Layer_11">
                 <path id="Vector" d="M822.34 1038.21C821.736 1035.31 821.492 1032.89 821.612 1030.46C821.612 1027.56 820.643 1025.38 818.462 1023.2C806.475 1011.09 797.274 996.796 786.741 983.593C776.811 971.118 765.554 959.613 753.083 949.561C745.455 943.383 738.675 936.237 731.896 929.091C727.293 924.128 722.57 919.159 719.181 913.346C718.452 912.013 717.483 910.56 716.155 909.956C705.377 904.143 694.484 898.45 683.466 892.757C673.656 887.669 663.607 883.189 654.166 877.617C646.418 873.013 638.061 870.106 629.105 867.08C627.288 868.049 625.955 868.049 624.018 867.08C619.055 861.147 612.031 858.721 607.429 853.392C603.795 849.397 599.196 845.762 601.738 838.736C606.34 836.314 609.486 838.736 613.24 841.158C616.265 844.429 618.447 847.215 622.081 848.788C651.38 861.992 678.623 879.19 707.683 892.997C712.405 895.299 717.128 897.477 722.575 899.899C730.807 903.774 734.681 911.284 740.012 917.097C751.275 929.207 764.105 939.139 778.877 946.405C779.726 946.77 780.694 946.405 782.147 945.921C786.625 945.072 789.171 947.494 791.592 949.916C798.372 956.698 805.396 963.119 812.175 971.11C809.15 957.906 809.15 944.828 808.786 931.385C810.238 928.843 812.175 927.025 810.358 923.634C809.39 918.91 808.421 914.915 809.27 909.947C817.262 906.072 822.829 908.733 823.558 916.848C824.162 922.781 825.739 928.114 828.28 933.927C828.4 935.624 827.067 936.109 827.432 937.317C827.796 938.526 828.764 938.166 827.796 937.317C826.827 936.588 829.249 935.864 828.764 936.589C832.399 937.922 831.43 940.708 831.67 943.006C832.518 952.334 833.851 961.417 838.085 969.892C838.689 970.981 839.658 972.194 839.418 973.283C836.997 987.694 845.833 1002.84 836.028 1016.76C834.456 1018.94 835.424 1022.21 834.94 1025C834.336 1028.39 833.971 1031.78 828.644 1030.81C825.979 1030.33 828.28 1034.08 826.707 1036.02C825.619 1037.96 824.406 1038.68 822.229 1038.2H822.349L822.34 1038.21Z" fill="#464627"/>
@@ -2388,6 +2401,9 @@ export default function Tree({energyUsed, maxEnergyUsage}: TreeProps) {
             </clipPath>
             </defs>
             </svg>
+            <div className={styles.energyusers} id="energyUsers">
+                <p>HI</p>
+            </div>
         </div>
     )
 }

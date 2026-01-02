@@ -7,11 +7,15 @@ import { useEffect, useState } from 'react';
 export default function Test() {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [todayEnergy, setTodayEnergy] = useState(0);
+  const [todayEnergy, setTodayEnergy] = useState(0); // set to 0 for all of these when using with signal
   const [yesterdayEnergy, setYesterdayEnergy] = useState(0);
   const [tdAvgEnergy, setTdAvgEnergy] = useState(0);
   const [yestAvgEnergy, setYestAvgEnergy] = useState(0);
 
+
+  // uncomment to use with actual data
+  // Then set the useStates above to be 0 starting point :)
+     
     useEffect(() => {
         async function getData() {
             const res = await fetch('/api/hourly-totals', new Request(''));
@@ -58,17 +62,17 @@ export default function Test() {
         
     }, []);
 
-    const energyPercentDifferentialProd = ((todayEnergy - yesterdayEnergy)/yesterdayEnergy) * 200000
+    const energyPercentDifferentialProd = ((todayEnergy - yesterdayEnergy)/yesterdayEnergy) * 300000
     console.log("ENERGYPERCENTDIFF: " + energyPercentDifferentialProd)
  if (todayEnergy != 0) {
   return (
     <div className={styles.main}>
       <div>
-        <Tree energyUsed={200000 - 50000 - energyPercentDifferentialProd} maxEnergyUsage={200000}/>
+        <Tree energyUsed={180000 - 30000 - energyPercentDifferentialProd} maxEnergyUsage={180000}/>
         <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
       </div>
       <div>
-        <Tree energyUsed={200000 - 50000} maxEnergyUsage={200000}/>
+        <Tree energyUsed={180000 - 30000} maxEnergyUsage={180000}/>
         <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
       </div>
       

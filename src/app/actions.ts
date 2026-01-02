@@ -91,8 +91,6 @@ export async function getDeviceData(deviceNumber: string, JWT: string) {
     
     // Start time is start of day yesterday, step by 1h, end time is start of current hour
     const time = 'sod(now):1h:soh(now)'
-    console.log("HERHERHEHREHRHERHEHR")
-    console.log("FETCH URL: " + `${URL}/register?reg=all&time=${time}&delta=true`)
 
     const response = await fetch(`${URL}/register?reg=all&time=${time}&delta=true`, {
     method: 'GET',
@@ -138,6 +136,8 @@ export async function getYesterdaysEnergyTotals(deviceNumber: string, JWT: strin
         'Authorization': bearer,
     },
     }).then((r) => r.json());
+
+    console.log("RESPONSE: ", response)
 
     const res = convertPowerRangesToTotals(response.ranges);
 

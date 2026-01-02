@@ -5,9 +5,12 @@ import { ExplanationCard } from "@/components/custom/ExplanationCard";
 import { DayTotalsChart } from "@/components/custom/DayTotalsChart";
 import { DevicesChart } from "@/components/custom/DevicesChart";
 import styles from "../styles/Page.module.css"
+import { useState } from "react";
+import Test from "./tree/page";
 
 
 export default function Home() {
+  const [dashboardMain, setDashboardMain] = useState<number>(0)
 
   return (
     <div className="bg-blue-50 bg-cover min-h-svh">
@@ -26,7 +29,14 @@ export default function Home() {
           </section>
           <section className={styles.chartsmain}>
             <div className={styles.daytotalschart}>
-              <DayTotalsChart/>
+              <h3 className={styles.subtextheader}>Total Energy Use</h3>
+              <div>
+                <button className={styles.chartselectbtn} onClick={() => setDashboardMain(0)}>Chart</button>
+                <button className={styles.chartselectbtn} onClick={() => setDashboardMain(1)} style={{ backgroundColor: "#dbaf00" }}>Tree</button>
+              </div>
+              {dashboardMain == 0 ? <DayTotalsChart/> : null}
+              {dashboardMain == 1 ? <Test /> : null}
+              
             </div>
             <div className={styles.explainationcard}>
               <ExplanationCard/>

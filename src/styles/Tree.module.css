@@ -27,3 +27,7 @@
   width: 30vw;
   display: block;
 }
+
+.energyusers {
+  display: none;
+}
