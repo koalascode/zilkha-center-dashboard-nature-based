@@ -47,8 +47,11 @@ export default function Tree({energyUsed, maxEnergyUsage}: TreeProps) {
 
             
             const newTotalPathLength = (energyUsed/maxEnergyUsage) * totalLengthSum
-            
-            
+            //console.log("HUHHHHHH: ", (energyUsed/maxEnergyUsage))
+            console.log("ENERGYUSED: ", energyUsed)
+            console.log("MAXENERGYUSED: ", maxEnergyUsage)
+            //console.log("newTotalPathLength: ", newTotalPathLength, " - ", energyUsed)
+            //console.log("totalLengthSum: ", totalLengthSum)
             let currLeafIndx = 0
             
             while (totalLengthSum > newTotalPathLength) {

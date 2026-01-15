@@ -7,6 +7,8 @@ import { DevicesChart } from "@/components/custom/DevicesChart";
 import styles from "../styles/Page.module.css"
 import { useState } from "react";
 import Test from "./tree/page";
+import BottlePage from "./bottle/page";
+
 
 
 export default function Home() {
@@ -33,9 +35,11 @@ export default function Home() {
               <div>
                 <button className={styles.chartselectbtn} onClick={() => setDashboardMain(0)}>Chart</button>
                 <button className={styles.chartselectbtn} onClick={() => setDashboardMain(1)} style={{ backgroundColor: "#dbaf00" }}>Tree</button>
+                <button className={styles.chartselectbtn} onClick={() => setDashboardMain(2)} style={{ backgroundColor: "#167ce2ff" }}>Bottle</button>
               </div>
-              {dashboardMain == 0 ? <DayTotalsChart/> : null}
-              {dashboardMain == 1 ? <Test /> : null}
+              {dashboardMain === 0 ? <DayTotalsChart/> : null}
+              {dashboardMain === 1 ? <Test /> : null}
+              {dashboardMain === 2 ? <BottlePage /> : null}
               
             </div>
             <div className={styles.explainationcard}>

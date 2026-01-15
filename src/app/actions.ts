@@ -11,12 +11,10 @@ export async function getAuthToken(deviceNumber: string) {
     }
     const URL = `https://egauge${deviceNumber}.d.egauge.net/api`
     // Get the 'unauthorized' response
-    console.log('URL: ', URL)
 
     const unauthorized_data = await fetch(`${URL}/auth/unauthorized`);
     const unauthorized_data_json = await unauthorized_data.json();
 
-    console.log("UNAUTH DATA: ", unauthorized_data_json)
 
     // Get the realm and server nonce (valid for 1 min)
     const realm = unauthorized_data_json.rlm;
@@ -124,9 +122,12 @@ export function convertPowerRanges(ranges: Array<any>) : Array<any> {
 }
 
 // Gets yesterday's total instantaneous energy rates per hour for each URL
+
 export async function getYesterdaysEnergyTotals(deviceNumber: string, JWT: string) {
     const URL = `https://egauge${deviceNumber}.d.egauge.net/api`
     const bearer = 'Bearer ' + JWT;
+
+    console.log("DEVICE NUMBER: ", deviceNumber)
 
     // Start time is start of day yesterday, step by 1h, end time is start of current hour
     const response = await fetch(`${URL}/register?reg=all&time=sod(now-1d):1h:soh(now)&delta=true`, {
@@ -137,9 +138,9 @@ export async function getYesterdaysEnergyTotals(deviceNumber: string, JWT: strin
     },
     }).then((r) => r.json());
 
-    console.log("RESPONSE: ", response)
-
+    //console.log("DATA: ", response)
     const res = convertPowerRangesToTotals(response.ranges);
+    console.log("RES: ", res)
 
     return res;
 }
@@ -148,6 +149,7 @@ export async function getYesterdaysEnergyTotals(deviceNumber: string, JWT: strin
 // Takes the ranges array from a sensor response, returns array of time-power objects with summing
 export function convertPowerRangesToTotals(ranges: Array<any>) : Array<any> {
   const list = [];
+  
   let timestamp = ranges[0].ts // Get the start timestamp
   for (const item of ranges[0].rows.slice(1)) { // Slicing skips first value, where time isn't a delta and power isn't instantaneous
     timestamp = timestamp - ranges[0].delta; // Account for the delta between timestamps

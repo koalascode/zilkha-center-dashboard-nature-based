@@ -1,0 +1,19 @@
+.main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    gap: 5rem;
+}
+
+.sidecontainer {
+    max-width: 35%;
+}
+
+.header {
+    font-size: 2rem;
+}
+
+.energyusep {
+    text-align: center;
+}

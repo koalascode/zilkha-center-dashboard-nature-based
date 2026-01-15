@@ -62,17 +62,17 @@ export default function Test() {
         
     }, []);
 
-    const energyPercentDifferentialProd = ((todayEnergy - yesterdayEnergy)/yesterdayEnergy) * 300000
+    const energyPercentDifferentialProd = ((todayEnergy - yesterdayEnergy)/yesterdayEnergy) * 200000
     console.log("ENERGYPERCENTDIFF: " + energyPercentDifferentialProd)
  if (todayEnergy != 0) {
   return (
     <div className={styles.main}>
       <div>
-        <Tree energyUsed={180000 - 30000 - energyPercentDifferentialProd} maxEnergyUsage={180000}/>
+        <Tree energyUsed={energyPercentDifferentialProd > 0 ? 180000 - 40000 - energyPercentDifferentialProd : 180000 - 40000 + (energyPercentDifferentialProd * .15)} maxEnergyUsage={180000}/>
         <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
       </div>
       <div>
-        <Tree energyUsed={180000 - 30000} maxEnergyUsage={180000}/>
+        <Tree energyUsed={energyPercentDifferentialProd < 0 ? 180000 - 40000 + energyPercentDifferentialProd : 180000 - 40000 + (energyPercentDifferentialProd * .15)} maxEnergyUsage={180000}/>
         <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
       </div>
       
