@@ -1,0 +1,79 @@
+"use client"
+
+import Mountain from "./mountain"
+import { useEffect, useState } from 'react';
+import styles from '../../styles/MountainPage.module.css'
+
+export default function MountainPage() {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//   const [todayEnergy, setTodayEnergy] = useState(0); // set to 0 for all of these when using with signal
+//   const [yesterdayEnergy, setYesterdayEnergy] = useState(0);
+  const [tdAvgEnergy, setTdAvgEnergy] = useState(0);
+  const [yestAvgEnergy, setYestAvgEnergy] = useState(0);
+
+
+  // uncomment to use with actual data
+  // Then set the useStates above to be 0 starting point :)
+     
+    useEffect(() => {
+        async function getData() {
+            const res = await fetch('/api/hourly-totals', new Request(''));
+            const data = await res.json();
+
+            let todaySum = 0
+            let yesterdaySum = 0
+
+            let todayHours = 0
+            let yesterdayHours = 0
+
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].Today == null) {
+                break
+              }
+
+              todaySum += data[i].Today
+              yesterdaySum += data[i].Yesterday
+
+              todayHours += 1
+              yesterdayHours += 1
+            }
+
+            // console.log("todaySum: ", todaySum)
+            // console.log("yesterdaySum: ", yesterdaySum)
+            // console.log("todayHours: ", todayHours)
+            // console.log("yesterdayHours: ", yesterdayHours)
+
+            const todayExtrap = todaySum * (24/todayHours)
+            const yesterdayExtrap = yesterdaySum * (24/yesterdayHours)
+
+            const avgKwHrsTd = Math.round(todayExtrap/24)
+            const avgKwHrsYest = Math.round(yesterdayExtrap/24)
+
+            // setTodayEnergy(todayExtrap)
+            // setYesterdayEnergy(yesterdayExtrap)
+
+            setTdAvgEnergy(avgKwHrsTd)
+            setYestAvgEnergy(avgKwHrsYest)
+
+            
+
+        }
+        //getData();
+        // IN testing without real data
+        
+    }, []);
+
+    console.log("TODAY AVG ENERGY: ", tdAvgEnergy)
+    console.log("YESTERDAY AVG ENERGY: ", yestAvgEnergy)
+        return (
+            <div className={styles.main}>
+                <div className={styles.sidecontainer}>
+                    <Mountain energyUsed={1000} maxEnergyUsage={12500} yestEnergyUsed={10000}/>
+                    <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
+                </div>
+               
+
+
+            </div>
+        )
+}

@@ -1,0 +1,21 @@
+.main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    gap: 5rem;
+    margin-top: 1rem;
+}
+
+.sidecontainer {
+    max-width: 100%;
+
+}
+
+.header {
+    font-size: 2rem;
+}
+
+.energyusep {
+    text-align: center;
+}

@@ -8,6 +8,7 @@ import styles from "../styles/Page.module.css"
 import { useState } from "react";
 import Test from "./tree/page";
 import BottlePage from "./bottle/page";
+import MountainPage from "./mountain/page";
 
 
 
@@ -36,10 +37,12 @@ export default function Home() {
                 <button className={styles.chartselectbtn} onClick={() => setDashboardMain(0)}>Chart</button>
                 <button className={styles.chartselectbtn} onClick={() => setDashboardMain(1)} style={{ backgroundColor: "#dbaf00" }}>Tree</button>
                 <button className={styles.chartselectbtn} onClick={() => setDashboardMain(2)} style={{ backgroundColor: "#167ce2ff" }}>Bottle</button>
+                <button className={styles.chartselectbtn} onClick={() => setDashboardMain(3)} style={{ backgroundColor: "rgb(22, 219, 226)" }}>Mountain</button>
               </div>
               {dashboardMain === 0 ? <DayTotalsChart/> : null}
               {dashboardMain === 1 ? <Test /> : null}
               {dashboardMain === 2 ? <BottlePage /> : null}
+              {dashboardMain === 3 ? <MountainPage /> : null}
               
             </div>
             <div className={styles.explainationcard}>
