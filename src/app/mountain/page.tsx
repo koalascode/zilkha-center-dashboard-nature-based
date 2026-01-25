@@ -66,9 +66,18 @@ export default function MountainPage() {
         return (
             <div className={styles.main}>
                 <div className={styles.sidecontainer}>
-                    <Mountain energyUsed={1000} maxEnergyUsage={12500} yestEnergyUsed={10000}/>
-                    <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
-                    <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
+                    { tdAvgEnergy === 0 && yestAvgEnergy === 0 ? 
+                    <div>
+                        <h1>Loading Loading</h1>
+                    </div>
+                         : 
+                    <div>
+                        <Mountain energyUsed={tdAvgEnergy} maxEnergyUsage={Math.max(tdAvgEnergy, yestAvgEnergy) + 2500} yestEnergyUsed={yestAvgEnergy}/>
+                        <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
+                        <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
+                    </div>
+                    }
+                    
                 </div>
                
 

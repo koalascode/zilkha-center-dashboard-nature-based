@@ -42,10 +42,11 @@ export default function Mountain({energyUsed, yestEnergyUsed, maxEnergyUsage}: M
       const puddle: number[][] = [];
 
 
-      const totalLengthSum = 9485.595603942871
+      const totalLengthSum = 8530
       let currEnabledPaths = 0
 
       const newTotalPathLength = (energyUsed/maxEnergyUsage) * totalLengthSum
+      console.log("NEW TOTAL PATH LENGTH: ", newTotalPathLength)
 
       for (let i = 0; i < fullMaskNums.length; i++) {
         const el = document.getElementById("melt_" + fullMaskNums[i])
@@ -114,6 +115,19 @@ export default function Mountain({energyUsed, yestEnergyUsed, maxEnergyUsage}: M
 
       let currPuddleIndx = 0
 
+      let totalLenTEST = 0
+
+      for (let i = 0; i < full.length; i++) {
+        totalLenTEST += full[i][1]
+      }
+
+      for (let i = 0; i < puddle.length; i++) {
+        totalLenTEST += puddle[i][1]
+      }
+
+      console.log("THE REAL TOTAL LENGTH IS: ", totalLenTEST)
+
+
       while (currEnabledPaths < newTotalPathLength) {
         const selectIndx = Math.floor(currPuddleIndx / 2)
 
@@ -126,9 +140,9 @@ export default function Mountain({energyUsed, yestEnergyUsed, maxEnergyUsage}: M
 
           const maskNumSelect = getRandomMelt(true, maskNumsEnabled)
 
-          console.log("puddleMaskArrs: ", puddle)
+          // console.log("puddleMaskArrs: ", puddle)
 
-          console.log("maskNumSelect: ", maskNumSelect)
+          // console.log("maskNumSelect: ", maskNumSelect)
 
           currMaskTotalSize = puddle[selectIndx][1]
 
@@ -147,9 +161,9 @@ export default function Mountain({energyUsed, yestEnergyUsed, maxEnergyUsage}: M
           // console.log("GET RANDOM MELT FALSE: ", getRandomMelt(false))
           const maskNumSelect = getRandomMelt(false, maskNumsEnabled)
 
-          console.log("fullMaksArrs: ", full)
+          // console.log("fullMaksArrs: ", full)
 
-          console.log("maskNumSelect: ", maskNumSelect)
+          // console.log("maskNumSelect: ", maskNumSelect)
 
           currMaskTotalSize = full[selectIndx][1]
 
@@ -375,7 +389,7 @@ export default function Mountain({energyUsed, yestEnergyUsed, maxEnergyUsage}: M
 
 
     const adjustDailyPuddles = (isToday: boolean) => {
-      const totalLengthSum = 9485.595603942871
+      const totalLengthSum = 8530
       if (isToday) {
         const todayTotalPathLength = (energyUsed/maxEnergyUsage) * totalLengthSum
 
@@ -413,6 +427,7 @@ export default function Mountain({energyUsed, yestEnergyUsed, maxEnergyUsage}: M
 
     // <image href="/mountains.png" width="1536" height="1024" preserveAspectRatio="none"/>
     // <g className={styles.meltcontainer} id="melt image">
+
     return (
         <div className={styles.main}> 
            <svg className={styles.svgmain} xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 1534 833" fill="none">
