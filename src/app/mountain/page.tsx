@@ -58,9 +58,7 @@ export default function MountainPage() {
             
 
         }
-        //getData();
-        // IN testing without real data
-        
+        getData();
     }, []);
 
     console.log("TODAY AVG ENERGY: ", tdAvgEnergy)
@@ -70,6 +68,7 @@ export default function MountainPage() {
                 <div className={styles.sidecontainer}>
                     <Mountain energyUsed={1000} maxEnergyUsage={12500} yestEnergyUsed={10000}/>
                     <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
+                    <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
                 </div>
                
 
