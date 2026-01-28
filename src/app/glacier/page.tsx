@@ -1,15 +1,16 @@
 "use client"
 
-import Mountain from "./mountain"
 import { useEffect, useState } from 'react';
-import styles from '../../styles/MountainPage.module.css'
+import styles from '../../styles/GlacierPage.module.css'
+import Glacier from "./glacier";
 
-export default function MountainPage() {
+export default function GlacierPage() {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 //   const [todayEnergy, setTodayEnergy] = useState(0); // set to 0 for all of these when using with signal
 //   const [yesterdayEnergy, setYesterdayEnergy] = useState(0);
   const [tdAvgEnergy, setTdAvgEnergy] = useState(0);
   const [yestAvgEnergy, setYestAvgEnergy] = useState(0);
+  const [isTodaySelected, setIsTodaySelected] = useState(true)
 
 
   // uncomment to use with actual data
@@ -61,8 +62,6 @@ export default function MountainPage() {
         getData();
     }, []);
 
-    console.log("TODAY AVG ENERGY: ", tdAvgEnergy)
-    console.log("YESTERDAY AVG ENERGY: ", yestAvgEnergy)
         return (
             <div className={styles.main}>
                 <div className={styles.sidecontainer}>
@@ -71,10 +70,14 @@ export default function MountainPage() {
                         <h1>Loading Loading</h1>
                     </div>
                          : 
-                    <div>
-                        <Mountain energyUsed={tdAvgEnergy < yestAvgEnergy ? tdAvgEnergy - 5000 : tdAvgEnergy} maxEnergyUsage={Math.max(tdAvgEnergy, yestAvgEnergy) + 2500} yestEnergyUsed={yestAvgEnergy < tdAvgEnergy ? yestAvgEnergy - 5000 : yestAvgEnergy}/>
-                        <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
-                        <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
+                        <div>
+                            <Glacier energyUsed={isTodaySelected ? tdAvgEnergy > yestAvgEnergy ? tdAvgEnergy : tdAvgEnergy - (.15 * tdAvgEnergy) : yestAvgEnergy > tdAvgEnergy ? yestAvgEnergy : yestAvgEnergy - (.15 * yestAvgEnergy)} maxEnergyUsage={15000}/>
+                            <div className={styles.btncontainer}>
+                                <button className={styles.btn} onClick={() => setIsTodaySelected(true)}>Today</button>
+                                <button className={styles.btn} onClick={() => setIsTodaySelected(false)}>Yesterday</button>
+                            </div>
+                            <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
+                            <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
                     </div>
                     }
                     
