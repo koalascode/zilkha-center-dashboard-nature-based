@@ -1,42 +1,61 @@
 import { getYesterdaysEnergyTotals, getFullAuthTokenDict } from "@/app/actions";
 import { sensors } from "@/app/data/sensors"
+import { db } from "@/lib/db";
 
+export const runtime = "nodejs"; // IMPORTANT: SQLite won't run on Edge
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(req: Request) {
     
-    const tokens = await getFullAuthTokenDict();
-    let totals: {time: string, power: number}[] = []
-    console.log("SENSORS: ")
-    // Go through all sensor URLs
-    for (let i = 0; i < sensors.length; i++) {
-        if (sensors[i].number.toString().slice(0,2) === "20") { 
-            continue;
-        }
-        const temp = await getYesterdaysEnergyTotals(sensors[i].number.toString(), tokens.get(sensors[i].number));
-        
-        // If totals has not been initialized, initialize it
-        if (totals.length === 0) {
-            totals = temp.map((val) => { return {time: val.time, power: val.power}})
+    const res:{ time: string, Today: number | null, Yesterday: number }[]  =  Array.from({ length: 24 }, () => ({time: "", Today: null, Yesterday: 0,}));
 
-        } else { // Otherwise add to its current power values
-            totals = totals.map((val, i) => { return {time: val.time, power: val.power + temp[i].power}})
-        }
-    }
+    const currDate = new Date()
+
+    const tdDate = currDate.toISOString().substring(0, 10) 
+
+    currDate.setDate(currDate.getDate() - 1)
+
+    console.log("CURR DATE: ", currDate)
     
-    // Split the totals array into yesterday and today 
-    const yesterday = totals.slice(0, 24);
-    const today = totals.slice(24);
-    const res: {time: string, Today: number | null, Yesterday: number}[] = []
+    const yestDay = currDate.toISOString().substring(0, 10)
 
-    // Combine their values
-    for (let i = 0; i < yesterday.length; i++) {
-        if (i < today.length) {
-            res.push({time: yesterday[i].time, Today: today[i].power, Yesterday: yesterday[i].power})
+    const rows = db.prepare(`SELECT * FROM data WHERE time > '${yestDay}'`).all()
+
+    const numToTimeConverter = (num: number) => {
+        let num12hr = num
+        let AmPm = "AM"
+
+        if (num12hr === 0) {
+            num12hr = 12
+        }
+
+        if (num12hr > 12) {
+            num12hr = num12hr - 12
+            AmPm = "PM"
+        }
+
+        return "" + num12hr + AmPm
+    }
+
+
+    for (let i = 0; i < rows.length; i++) {
+        
+        // Gets them in order
+        if (i < 24) {
+            res[i].Yesterday = rows[i].energyUsed
+
+            res[i].time = numToTimeConverter(i)
         } else {
-            res.push({time: yesterday[i].time, Today: null, Yesterday: yesterday[i].power})
+            let curr = i - 24
+           
+            res[curr].Today = rows[i].energyUsed
+            res[curr].time = numToTimeConverter(curr)
         }
     }
+
+
+    console.log("RES: ", res)
+    
 
     return new Response(JSON.stringify(res), {
         status: 200,

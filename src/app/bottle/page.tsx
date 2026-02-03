@@ -84,7 +84,7 @@ export default function BottlePage() {
     } else {
         return (
             <div>
-                <h1> Loading Loading </h1>
+                <h1> Loading Loading 123 </h1>
             </div>
         )
     }

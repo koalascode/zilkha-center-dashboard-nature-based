@@ -21,6 +21,8 @@ export default function GlacierPage() {
             const res = await fetch('/api/hourly-totals', new Request(''));
             const data = await res.json();
 
+            console.log("DATA: ", data)
+
             let todaySum = 0
             let yesterdaySum = 0
 
