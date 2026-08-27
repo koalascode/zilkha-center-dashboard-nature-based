@@ -6,3 +6,9 @@
     border-radius: 20rem;
 }
 
+.greentint {
+  filter: sepia(1) saturate(3) hue-rotate(95deg) brightness(0.9);
+}
+.redtint {
+  filter: sepia(1) hue-rotate(-45deg) saturate(4) brightness(0.85);
+}

@@ -3,18 +3,19 @@
 //import elkayFlic from '../../lib/elkay_bottle.png'
 //import Image from 'next/image'
 import styles from '../../styles/Bottle.module.css'
-import { useEffect, useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 
 type BottleProps = {
   energyUsed: number;
   maxEnergyUsage: number;
+  updateDuration: number;
 };
 
 // Clean JS-style animator (works fine in TSX too)
 function animateFilterHeight(
   filterEl: SVGFilterElement | null,
   toHeight: number = 100,
-  duration: number = 600
+  duration: number,
 ) {
   if (!filterEl) return;
 
@@ -52,8 +53,13 @@ function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-function animateWaterTopY(pathEl: SVGPathElement | null, toTopY: number, duration = 2000) {
+function animateWaterTopY(pathEl: SVGPathElement | null, toTopY: number, duration: number) {
   if (!pathEl) return;
+
+  if (duration === 0) {
+    pathEl.setAttribute("d", makeWaterPath(toTopY));
+    return;
+  }
 
   // cancel prior animation on this element
   const el = pathEl as SVGPathElement & { __rafId?: number };
@@ -62,8 +68,8 @@ function animateWaterTopY(pathEl: SVGPathElement | null, toTopY: number, duratio
 
   // Try to read current topY from the current d (looks for "...V<number>...")
   const d = pathEl.getAttribute("d") || "";
-  const m = d.match(/V(-?\d+(\.\d+)?)/);
-  const fromTopY = m ? parseFloat(m[1]) : 0;
+  const m = d.match(/523 (-?\d+(?:\.\d+)?)H/);
+  const fromTopY = m ? 724 - parseFloat(m[1]) : 0;
 
   const start = performance.now();
 
@@ -86,7 +92,7 @@ function animateWaterTopY(pathEl: SVGPathElement | null, toTopY: number, duratio
 
 
 
-export default function Bottle({energyUsed, maxEnergyUsage}: BottleProps) {
+export default function Bottle({energyUsed, maxEnergyUsage, updateDuration}: BottleProps) {
     //344H198.014C197.456 is the num that gets adjusted
     // Top is: 174
     // Bottom is: 724
@@ -99,30 +105,65 @@ export default function Bottle({energyUsed, maxEnergyUsage}: BottleProps) {
     console.log("maxEnergyUsed: ", maxEnergyUsage)
 
     const randomId = useId()
+    const isFirstRender = useRef(true);
+    const timeoutIds = useRef<ReturnType<typeof setTimeout>[]>([]);
+    // Tracks the latest energyUsed value so the cleanup can tell whether it was triggered
+    // by a real prop change or by React Strict Mode's mount→cleanup→remount cycle.
+    const latestEnergyUsed = useRef(energyUsed);
+    latestEnergyUsed.current = energyUsed;
 
     useEffect(() => {
+        timeoutIds.current.forEach(id => clearTimeout(id));
+        timeoutIds.current = [];
 
         const filterEl = document.getElementById('filter2_d_11_74') as SVGFilterElement | null;
-        //const height = filterEl?.setAttribute("height", "20")
-        setTimeout(function() {
-            animateFilterHeight(filterEl, 100, 1300);
-        }, 700); // 2000 milliseconds = 2 seconds
-        
-
-
         const pathEl = document.getElementById("waterfill" + randomId) as SVGPathElement | null;
-        setTimeout(function() {
-        animateWaterTopY(pathEl, 550 * Math.min(1, 1.5 - (energyUsed/maxEnergyUsage)), 3500); // ease over 2s
-        }, 700)
+        const targetTopY = 550 * Math.min(1, 1.1 - (energyUsed / maxEnergyUsage));
+        // Capture the value at effect-run time for comparison in the cleanup
+        const capturedEnergy = energyUsed;
 
-        setTimeout(function() {
-            animateFilterHeight(filterEl, 0, 1200);
-        }, 3700); // 2000 milliseconds = 2 seconds
-        
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
 
-        //waterFallHeightSelector!.height = "100"
-    }, []);
+            // After 700ms: fade in the waterfall overlay rect and animate the
+            // filter height from 0 → 100 over 1300ms, producing the falling-water effect
+            timeoutIds.current.push(setTimeout(() => {
+                const backRect = document.getElementById("backrect" + randomId);
+                backRect!.style.opacity = "1";
+                animateFilterHeight(filterEl, 100, 1300);
+            }, 700));
 
+            // After 700ms: fill the water to the target level over 3000ms
+            // targetTopY is derived from energyUsed — higher usage = lower water
+            timeoutIds.current.push(setTimeout(() => {
+                animateWaterTopY(pathEl, targetTopY, 3000);
+            }, 700));
+
+            // After 4200ms (≈ when water finishes filling): collapse the filter height
+            // back to 0 over 1200ms and fade out the waterfall overlay, ending the entry animation
+            timeoutIds.current.push(setTimeout(() => {
+                animateFilterHeight(filterEl, 0, 1200);
+                const backRect = document.getElementById("backrect" + randomId);
+                backRect!.style.opacity = "0";
+            }, 4200));
+        } else {
+            // On subsequent energyUsed changes, skip the entry animation and animate
+            // the water level over updateDuration (longer for button presses, shorter for sliders)
+            animateWaterTopY(pathEl, targetTopY, updateDuration);
+        }
+
+        return () => {
+            timeoutIds.current.forEach(id => clearTimeout(id));
+            // React Strict Mode runs effects twice on mount. Between the two runs the
+            // cleanup fires with the same energyUsed value (no prop change happened).
+            // Detect this by comparing the captured value to the current latest value —
+            // if they match, this is the Strict Mode cleanup, so reset isFirstRender so
+            // the second mount-run also plays the entry animation instead of the update path.
+            if (latestEnergyUsed.current === capturedEnergy) {
+                isFirstRender.current = true;
+            }
+        };
+    }, [energyUsed, maxEnergyUsage]);
 
     return (
         <div>
@@ -132,7 +173,7 @@ export default function Bottle({energyUsed, maxEnergyUsage}: BottleProps) {
                 <g id="filler" filter="url(#filter0_d_11_74)">
                 <rect x="4" width="1000" height="1000" fill="url(#pattern0_11_74)" shapeRendering="crispEdges"/>
                 </g>
-                <g id="backrect" filter="url(#filter1_f_11_74)">
+                <g className={styles.backrect} id={"backrect" + randomId} filter="url(#filter1_f_11_74)">
                 <rect x="493" y="294" width="21" height="83" fill="#262626" fillOpacity="0.08"/>
                 </g>
                 <g id="water" filter="url(#filter2_d_11_74)">

@@ -26,6 +26,7 @@ export async function getAuthToken(deviceNumber: string) {
     // Hash login info
     const ha1_content = `${USER}:${realm}:${PASS}`;
     const ha1 = md5(ha1_content); // must be MD5 hash as per eGauge docs
+
     const hash_content = `${ha1}:${nnc}:${cnnc}`;
     const hash = md5(hash_content);
 
@@ -90,6 +91,7 @@ export async function getDeviceData(deviceNumber: string, JWT: string) {
     // Start time is start of day yesterday, step by 1h, end time is start of current hour
     const time = 'sod(now):1h:soh(now)'
 
+
     const response = await fetch(`${URL}/register?reg=all&time=${time}&delta=true`, {
     method: 'GET',
     credentials: 'include',
@@ -97,6 +99,8 @@ export async function getDeviceData(deviceNumber: string, JWT: string) {
         'Authorization': bearer,
     },
     }).then((r) => r.json());
+    console.log("DEVICE NUMBER: ", deviceNumber)
+    console.log("RESPONSE: ", response)
 
     const names = response.registers.map((val: any) => {return val.name})
     const ranges = convertPowerRanges(response.ranges);

@@ -1,5 +1,3 @@
-import { getYesterdaysEnergyTotals, getFullAuthTokenDict } from "@/app/actions";
-import { sensors } from "@/app/data/sensors"
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs"; // IMPORTANT: SQLite won't run on Edge
@@ -9,17 +7,18 @@ export async function GET(req: Request) {
     
     const res:{ time: string, Today: number | null, Yesterday: number }[]  =  Array.from({ length: 24 }, () => ({time: "", Today: null, Yesterday: 0,}));
 
-    const currDate = new Date()
+    const currDate = new Date();
 
-    const tdDate = currDate.toISOString().substring(0, 10) 
+    currDate.setHours(currDate.getHours() - 5);
+
+    //const tdDate = currDate.toISOString().substring(0, 10) 
+
 
     currDate.setDate(currDate.getDate() - 1)
-
-    console.log("CURR DATE: ", currDate)
     
     const yestDay = currDate.toISOString().substring(0, 10)
 
-    const rows = db.prepare(`SELECT * FROM data WHERE time > '${yestDay}'`).all()
+    const rows: any = db.prepare(`SELECT * FROM data WHERE time > '${yestDay}'`).all()
 
     const numToTimeConverter = (num: number) => {
         let num12hr = num
@@ -42,19 +41,16 @@ export async function GET(req: Request) {
         
         // Gets them in order
         if (i < 24) {
-            res[i].Yesterday = rows[i].energyUsed
+            res[i].Yesterday = Math.trunc(rows[i].energyUsed)
 
             res[i].time = numToTimeConverter(i)
         } else {
-            let curr = i - 24
+            const curr = i - 24
            
-            res[curr].Today = rows[i].energyUsed
+            res[curr].Today = Math.trunc(rows[i].energyUsed)
             res[curr].time = numToTimeConverter(curr)
         }
     }
-
-
-    console.log("RES: ", res)
     
 
     return new Response(JSON.stringify(res), {
