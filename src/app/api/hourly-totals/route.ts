@@ -1,4 +1,5 @@
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
+import { USE_FAKE_DATA, fakeHourlyRows } from "@/lib/fakeData";
 
 export const runtime = "nodejs"; // IMPORTANT: SQLite won't run on Edge
 
@@ -18,7 +19,11 @@ export async function GET(req: Request) {
     
     const yestDay = currDate.toISOString().substring(0, 10)
 
-    const rows: any = db.prepare(`SELECT * FROM data WHERE time > '${yestDay}'`).all()
+    // Fake rows are shaped exactly like the SQLite ones, so everything below
+    // this line runs unchanged either way. Set USE_FAKE_DATA=false to go live.
+    const rows: any = USE_FAKE_DATA
+        ? fakeHourlyRows(new Date())
+        : getDb().prepare(`SELECT * FROM data WHERE time > '${yestDay}'`).all()
 
     const numToTimeConverter = (num: number) => {
         let num12hr = num

@@ -4,6 +4,54 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import styles from '../../styles/GlacierPage.module.css'
 import Glacier from "./glacier";
 
+/**
+ * Two glacier extents drawn on top of each other.
+ *
+ * Melt is monotonic in energy (see `targetMelt` in glacier.tsx), so less energy
+ * means a bigger glacier and the two extents are always *nested* — the overlap
+ * region is exactly the smaller glacier. That lets us colour only their
+ * difference with no mask arithmetic: paint the bigger extent tinted, then
+ * cover it with the smaller one, opaque and untinted. What still shows through
+ * from underneath is precisely the difference.
+ */
+function GlacierPair({ energyUsed, energyGenerated, maxEnergyUsage, meltEffectTiming }: {
+    energyUsed: number;
+    energyGenerated: number;
+    maxEnergyUsage: number;
+    meltEffectTiming: number;
+}) {
+    // lower energy -> less melt -> bigger glacier
+    const usedIsBigger = energyUsed < energyGenerated;
+    const biggerExtentEnergy  = usedIsBigger ? energyUsed : energyGenerated;
+    const smallerExtentEnergy = usedIsBigger ? energyGenerated : energyUsed;
+
+    return (
+        <div style={{ position: 'relative' }}>
+            {/* Bigger extent, tinted by which quantity it represents:
+                generation ahead of use reads green, a deficit reads red. */}
+            <Glacier
+                tint={usedIsBigger ? 'green' : 'red'}
+                energyGenerated={energyGenerated}
+                energyUsed={biggerExtentEnergy}
+                maxEnergyUsage={maxEnergyUsage}
+                meltEffectTiming={meltEffectTiming}
+            />
+            {/* Smaller extent: opaque and untinted, so it resets the overlap to
+                the plain photo. No backdrop — it would hide the layer below. */}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', pointerEvents: 'none' }}>
+                <Glacier
+                    tint="none"
+                    showBackground={false}
+                    energyGenerated={energyGenerated}
+                    energyUsed={smallerExtentEnergy}
+                    maxEnergyUsage={maxEnergyUsage}
+                    meltEffectTiming={meltEffectTiming}
+                />
+            </div>
+        </div>
+    );
+}
+
 export default function GlacierPage() {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 //   const [todayEnergy, setTodayEnergy] = useState(0); // set to 0 for all of these when using with signal
@@ -190,12 +238,12 @@ export default function GlacierPage() {
                         <div>
                             <div>
                                 <h2>Today vs Yesterday</h2>
-                                <div style={{ position: 'relative' }}>
-                                    <Glacier isEnergyUsed={true} energyGenerated={currEnergyGenerated} energyUsed={isTodaySelected ? tdAvgEnergy > yestAvgEnergy ? tdAvgEnergy : tdAvgEnergy - (.15 * tdAvgEnergy) : yestAvgEnergy > tdAvgEnergy ? yestAvgEnergy : yestAvgEnergy - (.15 * yestAvgEnergy)} maxEnergyUsage={15000} meltEffectTiming={5000}/>
-                                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', opacity: 0.45, pointerEvents: 'none',  }}>
-                                        <Glacier isEnergyUsed={true}  energyGenerated={currEnergyGenerated} energyUsed={currEnergyGenerated} maxEnergyUsage={15000} meltEffectTiming={5000}/>
-                                    </div>
-                                </div>
+                                <GlacierPair
+                                    energyUsed={isTodaySelected ? tdAvgEnergy > yestAvgEnergy ? tdAvgEnergy : tdAvgEnergy - (.15 * tdAvgEnergy) : yestAvgEnergy > tdAvgEnergy ? yestAvgEnergy : yestAvgEnergy - (.15 * yestAvgEnergy)}
+                                    energyGenerated={currEnergyGenerated}
+                                    maxEnergyUsage={15000}
+                                    meltEffectTiming={5000}
+                                />
                                 <div className={styles.btncontainer}>
                                     <button className={styles.btn} onClick={() => setIsTodaySelected(true)}>Today</button>
                                     <button className={styles.btn} onClick={() => setIsTodaySelected(false)}>Yesterday</button>
@@ -204,12 +252,12 @@ export default function GlacierPage() {
                                 <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
                             </div>
                             <div>
-                                <div style={{ position: 'relative' }}>
-                                    <Glacier isEnergyUsed={true} energyGenerated={currEnergyGenerated} energyUsed={currEnergyUsed} maxEnergyUsage={22000} meltEffectTiming={glacierTiming}/>
-                                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', opacity: 0.45, pointerEvents: 'none' }}>
-                                        <Glacier isEnergyUsed={false} energyGenerated={currEnergyGenerated} energyUsed={currEnergyGenerated} maxEnergyUsage={22000} meltEffectTiming={glacierTiming}/>
-                                    </div>
-                                </div>
+                                <GlacierPair
+                                    energyUsed={currEnergyUsed}
+                                    energyGenerated={currEnergyGenerated}
+                                    maxEnergyUsage={22000}
+                                    meltEffectTiming={glacierTiming}
+                                />
                                 <p>Energy Usage Prediction: {Math.round(currEnergyUsed)} Whr</p>
                                 
                                 <p>Energy Generation Prediction: {Math.round(currEnergyGenerated)} Whr</p>

@@ -1,11 +1,25 @@
 import Database from "better-sqlite3";
 import path from "path";
 
-console.log("PATH PATH PATH IS: ", process.env.SQLITE_PATH)
+// Real SQLite connection. Kept intact for when we switch back off fake data
+// (see USE_FAKE_DATA in src/lib/fakeData.ts).
+//
+// This is lazy on purpose: `new Database(...)` throws if the file is missing,
+// and at module scope that crashes any route that merely imports this file.
+// Deferring it means nothing breaks until something actually asks to query.
 
-const dbPath = process.env.SQLITE_PATH ?? path.join(process.cwd(), "data", "dailyenergy.db")
+let _db: Database.Database | null = null;
 
+export function getDb() {
+    if (_db) return _db;
 
-export const db = new Database(dbPath);
+    const dbPath =
+        process.env.SQLITE_PATH ?? path.join(process.cwd(), "data", "dailyenergy.db");
 
-db.pragma("journal_mode = WAL");
+    console.log("PATH PATH PATH IS: ", process.env.SQLITE_PATH);
+
+    _db = new Database(dbPath);
+    _db.pragma("journal_mode = WAL");
+
+    return _db;
+}
