@@ -7,8 +7,13 @@
 }
 
 .greentint {
-  filter: sepia(1) saturate(3) hue-rotate(95deg) brightness(0.9);
+  filter: sepia(.8) saturate(2) hue-rotate(85deg) brightness(0.9);
 }
+/* Duotone: pink shadows -> yellow highlights. The matrix lives in glacier.tsx
+   because CSS filter shorthands cannot express a two-hue ramp (they are linear,
+   so they only ever yield one hue at varying lightness). The id is fixed rather
+   than per-instance so this rule can reference it; every Glacier renders an
+   identical copy, and the browser resolves to the first. */
 .redtint {
-  filter: sepia(1) hue-rotate(-45deg) saturate(4) brightness(0.85);
+  filter: url(#glacierDuotoneRed);
 }

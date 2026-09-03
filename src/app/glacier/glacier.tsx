@@ -48,6 +48,14 @@ export default function Glacier({energyGenerated, energyUsed, maxEnergyUsage, me
     const W = 908;
     const H = 607;
 
+    // How far feDisplacementMap may shove a pixel: increase for a more jagged
+    // melt edge. A pixel moves by at most scale/2 in any direction, so the
+    // filter region needs that much slack past the canvas or the edge samples
+    // transparent black and fringes. RAGGED_SCALE is double the required
+    // minimum, which is cheap at this size.
+    const RAGGED_SCALE = 18;
+    const RAGGED_MARGIN = RAGGED_SCALE;
+
     // 1) Compute your "target melt" (0..1)
     const targetMelt = useMemo(() => {
         // example: melt based on current energy usage
@@ -92,10 +100,26 @@ export default function Glacier({energyGenerated, energyUsed, maxEnergyUsage, me
         const from = meltAnimRef.current;
         const to = targetMelt;
 
+        const cancelPending = () => {
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+        };
+
+        // Instant mode still lands exactly on `to`, but the DOM write waits for
+        // the next frame. A range slider fires `input` faster than the display
+        // refreshes, and every applyMelt invalidates the ragged filter, so
+        // writing inline meant re-running feTurbulence several times per paint.
+        // Each new event cancels the frame the previous one queued, so a burst
+        // of events collapses into a single filter pass.
         if (meltEffectTiming === 0) {
-            meltAnimRef.current = to;
-            applyMelt(to);
-            return;
+            rafRef.current = requestAnimationFrame(() => {
+                rafRef.current = null;
+                // Record only what actually reached the DOM, so a later
+                // animated transition eases from the on-screen value.
+                meltAnimRef.current = to;
+                applyMelt(to);
+            });
+            return cancelPending;
         }
 
         const durationMs = meltEffectTiming;
@@ -113,9 +137,7 @@ export default function Glacier({energyGenerated, energyUsed, maxEnergyUsage, me
 
         rafRef.current = requestAnimationFrame(tick);
 
-        return () => {
-            if (rafRef.current) cancelAnimationFrame(rafRef.current);
-        };
+        return cancelPending;
     }, [targetMelt, meltEffectTiming]);
 
 
@@ -126,7 +148,43 @@ export default function Glacier({energyGenerated, energyUsed, maxEnergyUsage, me
             <svg width="908" height="607" viewBox="0 0 908 607" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
               {/* NEW: dynamic melt mask */}
             <defs>
-                <filter id={raggedId} x="-20%" y="-20%" width="140%" height="140%">
+                {/* Duotone tint for .redtint, mapping ice luminance onto a
+                    pink -> yellow ramp. This cannot be done with the CSS
+                    filter shorthands: sepia collapses the image to one hue and
+                    hue-rotate/saturate/brightness are all linear, so their
+                    output is a line through the origin -- one hue at varying
+                    lightness. A two-hue ramp needs the constant offset in the
+                    fifth column below, which only feColorMatrix provides.
+                    The coefficients stretch the ice's own luma range (~0.73 to
+                    ~0.94) across the full ramp; without that stretch the ice
+                    is bright enough to land entirely in the yellow end.
+                    sRGB interpolation is required -- SVG defaults to
+                    linearRGB, which would skew the ramp toward the highlights.
+                    The id is deliberately not uid-suffixed so Glacier.module.css
+                    can name it; see the note there. */}
+                <filter id="glacierDuotoneRed" colorInterpolationFilters="sRGB">
+                    <feColorMatrix
+                        type="matrix"
+                        values="
+                             0.0032  0.0108  0.0011  0   0.9698
+                             0.4297  1.4455  0.1459  0  -1.1089
+                            -0.0866 -0.2913 -0.0294  0   0.8106
+                             0       0       0       1   0"
+                    />
+                </filter>
+                {/* Bounded in user space rather than as a percentage of the
+                    bounding box: the rects below are deliberately oversized to
+                    survive rotation, so a bbox-relative region made the filter
+                    evaluate millions of off-canvas pixels every frame. Only
+                    what lands inside the viewBox can affect the mask. */}
+                <filter
+                    id={raggedId}
+                    filterUnits="userSpaceOnUse"
+                    x={-RAGGED_MARGIN}
+                    y={-RAGGED_MARGIN}
+                    width={W + 2 * RAGGED_MARGIN}
+                    height={H + 2 * RAGGED_MARGIN}
+                >
                 <feTurbulence
                     type="fractalNoise"
                     baseFrequency="0.02"
@@ -137,7 +195,7 @@ export default function Glacier({energyGenerated, energyUsed, maxEnergyUsage, me
                 <feDisplacementMap
                     in="SourceGraphic"
                     in2="noise"
-                    scale="18" // increase = more jagged melt edge
+                    scale={RAGGED_SCALE}
                     xChannelSelector="R"
                     yChannelSelector="G"
                 />

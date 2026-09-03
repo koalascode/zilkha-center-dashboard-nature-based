@@ -110,3 +110,11 @@
 .monthbtn:hover{
   filter: brightness(1.05); 
 }
+
+.textgreen {
+    color: #0a7f2e;
+}
+
+.textred {
+    color: #c62828;
+}

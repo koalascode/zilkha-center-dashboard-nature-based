@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, useId } from 'react';
 import styles from '../../styles/GlacierPage.module.css'
 import Glacier from "./glacier";
 
@@ -26,18 +26,22 @@ function GlacierPair({ energyUsed, energyGenerated, maxEnergyUsage, meltEffectTi
     const smallerExtentEnergy = usedIsBigger ? energyGenerated : energyUsed;
 
     return (
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }} id={useId()}>
             {/* Bigger extent, tinted by which quantity it represents:
                 generation ahead of use reads green, a deficit reads red. */}
+            <div>
             <Glacier
                 tint={usedIsBigger ? 'green' : 'red'}
                 energyGenerated={energyGenerated}
                 energyUsed={biggerExtentEnergy}
                 maxEnergyUsage={maxEnergyUsage}
                 meltEffectTiming={meltEffectTiming}
-            />
+            /> 
+
+            </div>
             {/* Smaller extent: opaque and untinted, so it resets the overlap to
                 the plain photo. No backdrop — it would hide the layer below. */}
+            {/* This is the glacier that is on top */}
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', pointerEvents: 'none' }}>
                 <Glacier
                     tint="none"
@@ -68,6 +72,9 @@ export default function GlacierPage() {
   const solarRef = useRef<HTMLInputElement>(null)
   const humidityRef = useRef<HTMLInputElement>(null)
   const windRef = useRef<HTMLInputElement>(null)
+
+  
+
 
 
   // uncomment to use with actual data
@@ -227,6 +234,8 @@ export default function GlacierPage() {
 
     }
 
+        const usedIsBigger = currEnergyUsed < currEnergyGenerated;
+
         return (
             <div className={styles.main}>
                 <div className={styles.sidecontainer}>
@@ -236,20 +245,22 @@ export default function GlacierPage() {
                     </div>
                          : 
                         <div>
-                            <div>
+                            <div id="td_vs_yest">
                                 <h2>Today vs Yesterday</h2>
-                                <GlacierPair
+                                <Glacier          
+                                    tint="none"
+                                    showBackground={true}
+                                    energyGenerated={-1}
                                     energyUsed={isTodaySelected ? tdAvgEnergy > yestAvgEnergy ? tdAvgEnergy : tdAvgEnergy - (.15 * tdAvgEnergy) : yestAvgEnergy > tdAvgEnergy ? yestAvgEnergy : yestAvgEnergy - (.15 * yestAvgEnergy)}
-                                    energyGenerated={currEnergyGenerated}
-                                    maxEnergyUsage={15000}
-                                    meltEffectTiming={5000}
+                                    maxEnergyUsage={22000}
+                                    meltEffectTiming={3000}
                                 />
                                 <div className={styles.btncontainer}>
                                     <button className={styles.btn} onClick={() => setIsTodaySelected(true)}>Today</button>
                                     <button className={styles.btn} onClick={() => setIsTodaySelected(false)}>Yesterday</button>
                                 </div>
-                                <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
-                                <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
+                                <p className={styles.energyusedp}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
+                                <p className={styles.energyusedp}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
                             </div>
                             <div>
                                 <GlacierPair
@@ -258,14 +269,13 @@ export default function GlacierPage() {
                                     maxEnergyUsage={22000}
                                     meltEffectTiming={glacierTiming}
                                 />
-                                <p>Energy Usage Prediction: {Math.round(currEnergyUsed)} Whr</p>
+                                <p className={`${styles.energyusep} ${usedIsBigger ? styles.textgreen : ''}`}><b>Energy Usage Prediction: {Math.round(currEnergyUsed)} Whr</b></p>
                                 
-                                <p>Energy Generation Prediction: {Math.round(currEnergyGenerated)} Whr</p>
+                                <p className={`${styles.energyusep} ${usedIsBigger ? '' : styles.textred}`}><b>Energy Generation Prediction: {Math.round(currEnergyGenerated)} Whr</b></p>
                                 <div className={styles.monthbtncntr}>
 
                                     <button className={styles.monthbtn} onClick={() => setMonthTemps(1)}>Jan</button>
                                     <button className={styles.monthbtn} onClick={() => setMonthTemps(2)}>Feb</button>
-                                    
                                     <button className={styles.monthbtn} onClick={() => setMonthTemps(3)}>Mar</button>
                                     <button className={styles.monthbtn} onClick={() => setMonthTemps(4)}>Apr</button>
                                     <button className={styles.monthbtn} onClick={() => setMonthTemps(5)}>May</button>
