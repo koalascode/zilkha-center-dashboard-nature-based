@@ -269,9 +269,9 @@ export default function GlacierPage() {
                                     maxEnergyUsage={22000}
                                     meltEffectTiming={glacierTiming}
                                 />
-                                <p className={`${styles.energyusep} ${usedIsBigger ? styles.textgreen : ''}`}><b>Energy Usage Prediction: {Math.round(currEnergyUsed)} Whr</b></p>
+                                <p className={styles.energyusep}><b>Energy Usage Prediction: {Math.round(currEnergyUsed)} Whr</b></p>
                                 
-                                <p className={`${styles.energyusep} ${usedIsBigger ? '' : styles.textred}`}><b>Energy Generation Prediction: {Math.round(currEnergyGenerated)} Whr</b></p>
+                                <p className={`${styles.energyusep} ${usedIsBigger ? styles.textgreen : styles.textred}`}><b>Energy Generation Prediction: {Math.round(currEnergyGenerated)} Whr</b></p>
                                 <div className={styles.monthbtncntr}>
 
                                     <button className={styles.monthbtn} onClick={() => setMonthTemps(1)}>Jan</button>
