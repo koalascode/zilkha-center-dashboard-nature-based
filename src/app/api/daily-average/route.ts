@@ -1,48 +1,42 @@
-import { getDb } from "@/lib/db";
-import { USE_FAKE_DATA, fakeDayRows, EnergyRow } from "@/lib/fakeData";
+import { getDailyDb } from "@/lib/db";
+import { USE_FAKE_DATA, fakeDailyRow, DailyRow } from "@/lib/fakeData";
 
 export const runtime = "nodejs"; // SQLite won't run on Edge
-
-// The range the date picker on /glacier offers. Enforced here too, because
-// anyone can call the API directly and skip the picker's min/max.
-const MIN_DATE = "2021-01-01";
-const MAX_DATE = "2025-12-31";
 
 /**
  * GET /api/daily-average?date=YYYY-MM-DD
  *
- * Returns { date, avgEnergy } where avgEnergy is the mean of that day's hourly
- * energyUsed readings, the same "average W" figure the glacier page derives
- * for today and yesterday.
+ * Reads that day's row from dailyenergy.db (one row per day, 2021-01-01 to
+ * 2025-12-30) and returns:
+ *   { date, avgEnergy, temp, solarRad, humidity, windSpeed }
+ * avgEnergy is the day's average W, the same figure the glacier page shows for
+ * today and yesterday. The weather fields are that day's averages and may be
+ * null if the weather station had no readings.
+ *
+ * Which dates exist is decided by the table itself, not by a hardcoded range
+ * here, so this keeps working as more days are added. A missing day is a 404.
  */
 export async function GET(req: Request) {
     const date = new URL(req.url).searchParams.get("date") ?? "";
 
-    // 'YYYY-MM-DD' strings compare correctly as plain strings, so the range
-    // check needs no Date parsing.
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date < MIN_DATE || date > MAX_DATE) {
-        return Response.json(
-            { error: `date must be YYYY-MM-DD between ${MIN_DATE} and ${MAX_DATE}` },
-            { status: 400 },
-        );
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return Response.json({ error: "date must be YYYY-MM-DD" }, { status: 400 });
     }
 
-    // Next calendar day, computed in UTC so the local timezone can't shift it.
-    const next = new Date(`${date}T00:00:00Z`);
-    next.setUTCDate(next.getUTCDate() + 1);
-    const nextDay = next.toISOString().substring(0, 10);
+    const row: DailyRow | undefined = USE_FAKE_DATA
+        ? fakeDailyRow(date)
+        : (getDailyDb().prepare("SELECT * FROM data WHERE date = ?").get(date) as DailyRow | undefined);
 
-    const rows: EnergyRow[] = USE_FAKE_DATA
-        ? fakeDayRows(date)
-        : (getDb()
-              .prepare("SELECT * FROM data WHERE time >= ? AND time < ?")
-              .all(date, nextDay) as EnergyRow[]);
-
-    if (rows.length === 0) {
+    if (!row) {
         return Response.json({ error: `no data for ${date}` }, { status: 404 });
     }
 
-    const total = rows.reduce((sum, r) => sum + r.energyUsed, 0);
-
-    return Response.json({ date, avgEnergy: Math.round(total / rows.length) });
+    return Response.json({
+        date,
+        avgEnergy: Math.round(row.energyUsed),
+        temp: row.temp_out_avg,
+        solarRad: row.solar_rad_avg,
+        humidity: row.hum_out_avg,
+        windSpeed: row.wind_speed_avg,
+    });
 }

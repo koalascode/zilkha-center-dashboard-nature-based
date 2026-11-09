@@ -9,6 +9,7 @@ import Test from "./tree/page";
 import BottlePage from "./bottle/page";
 import MountainPage from "./mountain/page";
 import GlacierPage from "./glacier/page";
+import AnimationsView from "./animations/AnimationsView";
 
 
 export default function Home() {
@@ -25,12 +26,14 @@ export default function Home() {
                 <button className={styles.chartselectbtn} onClick={() => setDashboardMain(2)} style={{ backgroundColor: "#167ce2ff" }}>Bottle</button>
                 <button className={styles.chartselectbtn} onClick={() => setDashboardMain(3)} style={{ backgroundColor: "rgb(22, 219, 226)" }}>Mountain</button>
                 <button className={styles.chartselectbtn} onClick={() => setDashboardMain(4)} style={{ backgroundColor: "rgb(158, 22, 226)" }}>Glacier</button>
+                <button className={styles.chartselectbtn} onClick={() => setDashboardMain(5)} style={{ backgroundColor: "#8b16ca" }}>Animations</button>
               </div>
               {dashboardMain === 0 ? <DayTotalsChart/> : null}
               {dashboardMain === 1 ? <Test /> : null}
               {dashboardMain === 2 ? <BottlePage /> : null}
               {dashboardMain === 3 ? <MountainPage /> : null}
               {dashboardMain === 4 ? <GlacierPage /> : null}
+              {dashboardMain === 5 ? <AnimationsView /> : null}
               
             </div>
             <div className={styles.explainationcard}>

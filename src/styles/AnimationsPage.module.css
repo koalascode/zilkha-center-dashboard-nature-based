@@ -1,0 +1,397 @@
+/* Shared look for the animations board. Colours and button/slider shapes
+   follow the existing glacier/mountain/bottle pages. */
+
+.main {
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 1rem;
+}
+
+/* ---- Add bar ---- */
+
+.addbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: #faf5ff;
+}
+
+.selectlabel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font: 600 .75rem/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #4b5563;
+}
+
+.select {
+    border: 1px solid #8b16ca;
+    border-radius: 0.15rem;
+    padding: 0.4rem 2rem 0.4rem 0.6rem;
+    font: 500 .825rem/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #8b16ca;
+    background-color: white;
+    cursor: pointer;
+    min-width: 9rem;
+}
+
+.modes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn,
+.monthbtn {
+    appearance: none;
+    border: 0;
+    border-radius: 0.15rem;
+    padding: 0.475rem 1.125rem;
+    font: 500 .825rem/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: white;
+    cursor: pointer;
+    background-color: #8b16ca;
+    opacity: 0.6;
+    transition: filter .12s ease, opacity .12s ease;
+}
+
+.btn:hover,
+.monthbtn:hover {
+    filter: brightness(1.05);
+    opacity: 0.85;
+}
+
+.btnactive {
+    opacity: 1;
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+}
+
+.dateinput {
+    border: 1px solid #8b16ca;
+    border-radius: 0.15rem;
+    padding: 0.35rem 0.6rem;
+    font: 500 .825rem/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #8b16ca;
+    background: white;
+    cursor: pointer;
+}
+
+.addbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    appearance: none;
+    border: 0;
+    border-radius: 0.15rem;
+    padding: 0.5rem 1rem;
+    font: 600 .825rem/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: white;
+    background-color: #0a7f2e;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.addbtn:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+.addbtn:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.hint {
+    flex-basis: 100%;
+    margin: 0;
+    text-align: right;
+    font-size: .8rem;
+    color: #6b7280;
+}
+
+.btn:focus-visible,
+.monthbtn:focus-visible,
+.select:focus-visible,
+.dateinput:focus-visible,
+.addbtn:focus-visible,
+.iconbtn:focus-visible,
+.linkbtn:focus-visible {
+    outline: 2px solid #8b16ca;
+    outline-offset: 2px;
+}
+
+/* ---- Board ---- */
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: white;
+    min-width: 0;
+}
+
+.cardheader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.cardtitle {
+    margin: 0;
+    font-size: .95rem;
+    font-weight: 600;
+    color: #3b0764;
+}
+
+.cardactions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.iconbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 150ms, color 150ms;
+}
+
+.iconbtn:hover {
+    background: #f3f4f6;
+}
+
+.removebtn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+}
+
+/* Keeps a card from jumping while its animation chunk loads. */
+.stage {
+    min-height: 14rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.stage > * {
+    width: 100%;
+}
+
+/* tree.tsx sizes itself to 30vw; inside a card it should fill the card. */
+.treewrapper > div > svg {
+    width: 100%;
+}
+
+.bottlewrapper {
+    max-width: 260px;
+    margin: 0 auto;
+}
+
+.status {
+    text-align: center;
+    color: #6b7280;
+}
+
+.readout {
+    text-align: center;
+    font-size: .9rem;
+}
+
+.readout p {
+    margin: 0.15rem 0;
+}
+
+.muted {
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.textgreen { color: #0a7f2e; }
+.textred   { color: #c62828; }
+
+.empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    border: 2px dashed #e5e7eb;
+    border-radius: 0.5rem;
+    color: #4b5563;
+}
+
+.linkbtn {
+    border: 0;
+    background: none;
+    color: #8b16ca;
+    text-decoration: underline;
+    cursor: pointer;
+    font: inherit;
+}
+
+/* ---- Custom sliders (inside a card) ---- */
+
+.custom {
+    width: 100%;
+}
+
+.monthbtncntr {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.2rem;
+    margin-bottom: 0.75rem;
+}
+
+.monthbtn {
+    padding: 0.4rem 0;
+}
+
+.sliderscntr {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    font-size: .85rem;
+}
+
+.slider {
+    width: 100%;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: #d1a8f0;
+    outline: none;
+    cursor: pointer;
+    display: block;
+    margin-top: 6px;
+}
+
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #8b16ca;
+    cursor: pointer;
+    transition: transform .1s ease, box-shadow .1s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(139, 22, 202, 0.2);
+}
+
+.slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: none;
+    border-radius: 50%;
+    background: #8b16ca;
+    cursor: pointer;
+}
+
+.slider::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: #d1a8f0;
+}
+
+@media (max-width: 640px) {
+    .addbtn {
+        margin-left: 0;
+    }
+    .hint {
+        text-align: left;
+    }
+}
+
+/* ---- Add panel + preview ---- */
+
+.addpanel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid #e9d5ff;
+    border-radius: 0.5rem;
+    background: #faf5ff;
+}
+
+/* The bar sits inside .addpanel now, which supplies the frame. */
+.addpanel .addbar {
+    padding: 0;
+    border: 0;
+    background: none;
+}
+
+.addactions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
+.addactions .addbtn {
+    margin-left: 0;
+}
+
+.addactions .linkbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: .825rem;
+}
+
+.previewslot {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.previewcard {
+    border-style: dashed;
+    border-color: #c084fc;
+}
+
+.previewbadge {
+    display: inline-block;
+    margin-right: 0.4rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    background: #8b16ca;
+    color: white;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+    .addactions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+    }
+}

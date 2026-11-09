@@ -93,3 +93,31 @@ export function fakeDayRows(date: string): EnergyRow[] {
         energyUsed: hourlyUsage(date, hour),
     }));
 }
+
+// One row of dailyenergy.db's `data` table: the day's average W plus its
+// average weather readings.
+export type DailyRow = {
+    date: string;
+    energyUsed: number;
+    temp_out_avg: number | null;
+    solar_rad_avg: number | null;
+    hum_out_avg: number | null;
+    wind_speed_avg: number | null;
+};
+
+/**
+ * Stands in for:
+ *   SELECT * FROM data WHERE date = '<date>'   (dailyenergy.db)
+ */
+export function fakeDailyRow(date: string): DailyRow {
+    const hours = fakeDayRows(date);
+    const u = (k: string) => seededUnit(`${date}:${k}`);
+    return {
+        date,
+        energyUsed: hours.reduce((sum, r) => sum + r.energyUsed, 0) / hours.length,
+        temp_out_avg: Math.round((20 + u("temp") * 65) * 100) / 100,
+        solar_rad_avg: Math.round(u("solar") * 250 * 100) / 100,
+        hum_out_avg: Math.round((40 + u("hum") * 50) * 100) / 100,
+        wind_speed_avg: Math.round(u("wind") * 5 * 100) / 100,
+    };
+}

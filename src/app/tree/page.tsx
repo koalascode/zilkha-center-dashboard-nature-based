@@ -3,6 +3,7 @@
 import Tree from "./tree";
 import styles from '../../styles/TestPage.module.css'
 import { useEffect, useState } from 'react';
+import { RotateCcw } from 'lucide-react';
 
 export default function Test() {
 
@@ -11,6 +12,9 @@ export default function Test() {
   const [yesterdayEnergy, setYesterdayEnergy] = useState(0);
   const [tdAvgEnergy, setTdAvgEnergy] = useState(0);
   const [yestAvgEnergy, setYestAvgEnergy] = useState(0);
+  // Bumping this changes both trees' keys, so React rebuilds them from scratch:
+  // every leaf is back on the branch and the falling animation runs again.
+  const [replay, setReplay] = useState(0);
 
 
   // uncomment to use with actual data
@@ -66,16 +70,27 @@ export default function Test() {
     console.log("ENERGYPERCENTDIFF: " + energyPercentDifferentialProd)
  if (todayEnergy != 0) {
   return (
+    <div className={styles.page}>
     <div className={styles.main}>
       <div>
-        <Tree energyUsed={energyPercentDifferentialProd > 0 ? 180000 - 40000 - energyPercentDifferentialProd : 180000 - 40000 + (energyPercentDifferentialProd * .15)} maxEnergyUsage={180000}/>
+        <Tree key={`today-${replay}`} energyUsed={energyPercentDifferentialProd > 0 ? 180000 - 40000 - energyPercentDifferentialProd : 180000 - 40000 + (energyPercentDifferentialProd * .15)} maxEnergyUsage={180000}/>
         <p className={styles.energyusep}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
       </div>
       <div>
-        <Tree energyUsed={energyPercentDifferentialProd < 0 ? 180000 - 40000 + energyPercentDifferentialProd : 180000 - 40000 + (energyPercentDifferentialProd * .15)} maxEnergyUsage={180000}/>
+        <Tree key={`yest-${replay}`} energyUsed={energyPercentDifferentialProd < 0 ? 180000 - 40000 + energyPercentDifferentialProd : 180000 - 40000 + (energyPercentDifferentialProd * .15)} maxEnergyUsage={180000}/>
         <p className={styles.energyusep}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
       </div>
       
+    </div>
+    <button
+      type="button"
+      className={styles.replaybtn}
+      onClick={() => setReplay(r => r + 1)}
+      aria-label="Replay animation"
+      title="Replay animation"
+    >
+      <RotateCcw size={22} aria-hidden="true" />
+    </button>
     </div>
   );
 

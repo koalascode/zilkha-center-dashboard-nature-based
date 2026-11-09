@@ -13,3 +13,36 @@
 .energyusep {
     text-align: center;
 }
+/* Wraps the trees so the replay button can sit in its top-right corner. */
+.page {
+    position: relative;
+}
+
+/* Round icon button, pinned top-right, that restarts the leaf-drop animation. */
+.replaybtn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 150ms, transform 300ms;
+}
+
+.replaybtn:hover {
+    background: #f3f4f6;
+    transform: rotate(-45deg);
+}
+
+.replaybtn:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}

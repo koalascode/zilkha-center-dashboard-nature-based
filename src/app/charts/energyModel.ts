@@ -57,3 +57,20 @@ export function predictEnergy({ temp, solar, humidity, wind }: Weather) {
     return energyPred
 
 }
+
+// Solar generation estimate (Wh over one hour), same formula as the glacier
+// and mountain pages. Note: the pages convert °F→°C with 5/8 rather than 5/9;
+// kept as-is so this matches what those pages show.
+export function predictGeneration({ temp, solar, wind }: Weather) {
+    const tempC = (temp - 32) * (5/8)
+    const windMPS = wind * (0.44704)
+
+    const u0 = 25.0 // first heat-loss coefficient
+    const u1 = 6.84 // second heat-loss coefficient
+    const totalCapacity = 55.82 // kWh
+
+    const panelTemp = tempC + (solar/(u0 + (u1 * windMPS)))
+    const hourlyOutput = totalCapacity*(solar/1000)*(1 + (-0.004 * (panelTemp - 25)))
+
+    return hourlyOutput * 1000 // to Wh
+}

@@ -105,6 +105,9 @@ export default function Bottle({energyUsed, maxEnergyUsage, updateDuration}: Bot
     console.log("maxEnergyUsed: ", maxEnergyUsage)
 
     const randomId = useId()
+    // Per-instance id for the falling-water filter, so several bottles on one
+    // page each animate their own (a fixed id resolves to the first bottle only).
+    const pourFilterId = `filter2_d_11_74_${randomId.replaceAll(":", "")}`
     const isFirstRender = useRef(true);
     const timeoutIds = useRef<ReturnType<typeof setTimeout>[]>([]);
     // Tracks the latest energyUsed value so the cleanup can tell whether it was triggered
@@ -116,7 +119,7 @@ export default function Bottle({energyUsed, maxEnergyUsage, updateDuration}: Bot
         timeoutIds.current.forEach(id => clearTimeout(id));
         timeoutIds.current = [];
 
-        const filterEl = document.getElementById('filter2_d_11_74') as SVGFilterElement | null;
+        const filterEl = document.getElementById(pourFilterId) as SVGFilterElement | null;
         const pathEl = document.getElementById("waterfill" + randomId) as SVGPathElement | null;
         const targetTopY = 550 * Math.min(1, 1.1 - (energyUsed / maxEnergyUsage));
         // Capture the value at effect-run time for comparison in the cleanup
@@ -176,7 +179,7 @@ export default function Bottle({energyUsed, maxEnergyUsage, updateDuration}: Bot
                 <g className={styles.backrect} id={"backrect" + randomId} filter="url(#filter1_f_11_74)">
                 <rect x="493" y="294" width="21" height="83" fill="#262626" fillOpacity="0.08"/>
                 </g>
-                <g id="water" filter="url(#filter2_d_11_74)">
+                <g id="water" filter={`url(#${pourFilterId})`}>
                 <path d="M493 371.567V295C493 294.448 493.448 294 494 294H512C512.552 294 513 294.448 513 295V371.567C513 373.858 511.445 375.862 509.194 376.282C507.232 376.649 504.866 377 503 377C501.134 377 498.768 376.649 496.806 376.282C494.555 375.862 493 373.858 493 371.567Z" fill="url(#paint0_linear_11_74)" fillOpacity="0.13"/>
                 </g>
                 </g>
@@ -199,7 +202,7 @@ export default function Bottle({energyUsed, maxEnergyUsage, updateDuration}: Bot
                 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
                 <feGaussianBlur stdDeviation="6" result="effect1_foregroundBlur_11_74"/>
                 </filter>
-                <filter id="filter2_d_11_74" x="489" y="290" width="28" height="0" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                <filter id={pourFilterId} x="489" y="290" width="28" height="0" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
                 <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                 <feOffset/>

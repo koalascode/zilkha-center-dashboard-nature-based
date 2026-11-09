@@ -145,7 +145,7 @@ export default function Glacier({energyGenerated, energyUsed, maxEnergyUsage, me
 
     return (
         <div className={styles.main}> 
-            <svg width="908" height="607" viewBox="0 0 908 607" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+            <svg className={styles.svgfit} width="908" height="607" viewBox="0 0 908 607" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
               {/* NEW: dynamic melt mask */}
             <defs>
                 {/* Duotone tint for .redtint, mapping ice luminance onto a

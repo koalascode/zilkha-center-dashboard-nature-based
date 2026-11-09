@@ -17,3 +17,11 @@
 .redtint {
   filter: url(#glacierDuotoneRed);
 }
+/* Scales the glacier down to fit narrow containers (phones, board cards)
+   while keeping its 908x607 proportions. max-width rather than width so it
+   never grows past its natural size on wide screens. */
+.svgfit {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
