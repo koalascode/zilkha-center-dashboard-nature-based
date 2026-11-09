@@ -1,7 +1,9 @@
 import DashboardLayout from "@/components/custom/DashboardLayout";
 import { DayTotalsChart } from "@/components/custom/DayTotalsChart";
 import styles from "@/styles/Page.module.css";
+import BottleCounterparts from "./BottleCounterparts";
 import EnergyComparison from "./EnergyComparison";
+import HourlyDifference from "./HourlyDifference";
 
 export default function ChartsPage() {
   return (
@@ -12,7 +14,9 @@ export default function ChartsPage() {
           <DayTotalsChart />
         </div>
       </section>
+      <HourlyDifference />
       <EnergyComparison />
+      <BottleCounterparts />
     </DashboardLayout>
   );
 }

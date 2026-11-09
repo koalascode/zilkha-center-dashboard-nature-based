@@ -62,7 +62,10 @@ export default function GlacierPage() {
 //   const [yesterdayEnergy, setYesterdayEnergy] = useState(0);
   const [tdAvgEnergy, setTdAvgEnergy] = useState(0);
   const [yestAvgEnergy, setYestAvgEnergy] = useState(0);
-  const [isTodaySelected, setIsTodaySelected] = useState(true)
+  // Which day the top glacier shows. 'date' means the day picked in the date input.
+  const [selected, setSelected] = useState<'today' | 'yesterday' | 'date'>('today')
+  const [pickedDate, setPickedDate] = useState('')            // 'YYYY-MM-DD', '' until chosen
+  const [pickedAvgEnergy, setPickedAvgEnergy] = useState<number | null>(null)
   const [temp, setTemp] = useState(65)
   const [solar, setSolar] = useState(110)
   const [humidity, setHumidity] = useState(60)
@@ -125,6 +128,44 @@ export default function GlacierPage() {
         }
         getData();
     }, []);
+
+    // Fetch the picked day's average whenever the date input changes.
+    useEffect(() => {
+        if (!pickedDate) return;
+
+        // If the user changes the date again before this request finishes, the
+        // older response could land last and overwrite the newer one. The
+        // cleanup function flips `ignore` so stale responses are dropped.
+        let ignore = false;
+
+        fetch(`/api/daily-average?date=${pickedDate}`)
+            .then(res => res.ok ? res.json() : Promise.reject(res.status))
+            .then(data => {
+                if (ignore) return;
+                setPickedAvgEnergy(data.avgEnergy);
+                setSelected('date'); // switch only once the number is in hand
+            })
+            .catch(err => console.error('daily-average failed:', err));
+
+        return () => { ignore = true; };
+    }, [pickedDate]);
+
+    // Exaggerates the difference between two days so it's visible: the higher
+    // one shows as-is, the lower one shows 15% lower still.
+    const exaggerate = (value: number, other: number) => value > other ? value : value - (.15 * value)
+
+    const topGlacierEnergy =
+        selected === 'today'     ? exaggerate(tdAvgEnergy, yestAvgEnergy) :
+        selected === 'yesterday' ? exaggerate(yestAvgEnergy, tdAvgEnergy) :
+                                   exaggerate(pickedAvgEnergy ?? 0, tdAvgEnergy) // picked day vs today
+
+    // Build the label from the string's parts. new Date('2021-01-01') would be
+    // parsed as UTC midnight, which in US timezones displays as Dec 31.
+    const pickedDateLabel = (() => {
+        if (!pickedDate) return ''
+        const [y, m, d] = pickedDate.split('-').map(Number)
+        return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+    })()
 
     const currEnergyGenerated = useMemo(() => {
         const tempC = (temp - 32) * (5/8) 
@@ -251,16 +292,29 @@ export default function GlacierPage() {
                                     tint="none"
                                     showBackground={true}
                                     energyGenerated={-1}
-                                    energyUsed={isTodaySelected ? tdAvgEnergy > yestAvgEnergy ? tdAvgEnergy : tdAvgEnergy - (.15 * tdAvgEnergy) : yestAvgEnergy > tdAvgEnergy ? yestAvgEnergy : yestAvgEnergy - (.15 * yestAvgEnergy)}
+                                    energyUsed={topGlacierEnergy}
                                     maxEnergyUsage={22000}
                                     meltEffectTiming={3000}
                                 />
                                 <div className={styles.btncontainer}>
-                                    <button className={styles.btn} onClick={() => setIsTodaySelected(true)}>Today</button>
-                                    <button className={styles.btn} onClick={() => setIsTodaySelected(false)}>Yesterday</button>
+                                    <button className={styles.btn} onClick={() => setSelected('today')}>Today</button>
+                                    <button className={styles.btn} onClick={() => setSelected('yesterday')}>Yesterday</button>
+                                    <input
+                                        type="date"
+                                        className={styles.dateinput}
+                                        min="2021-01-01"
+                                        max="2025-12-31"
+                                        value={pickedDate}
+                                        onChange={(e) => setPickedDate(e.target.value)}
+                                        // Clicking back into an already-loaded date re-selects it
+                                        onFocus={() => { if (pickedAvgEnergy !== null) setSelected('date') }}
+                                    />
                                 </div>
                                 <p className={styles.energyusedp}><b>Today Average Energy Usage: {tdAvgEnergy}W</b></p>
                                 <p className={styles.energyusedp}><b>Yesterday Average Energy Usage: {yestAvgEnergy}W</b></p>
+                                {pickedAvgEnergy !== null && (
+                                    <p className={styles.energyusedp}><b>{pickedDateLabel} Average Energy Usage: {pickedAvgEnergy}W</b></p>
+                                )}
                             </div>
                             <div>
                                 <GlacierPair

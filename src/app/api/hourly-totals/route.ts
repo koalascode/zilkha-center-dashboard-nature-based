@@ -33,9 +33,12 @@ export async function GET(req: Request) {
             num12hr = 12
         }
 
+        if (num >= 12) {
+            AmPm = "PM"
+        }
+
         if (num12hr > 12) {
             num12hr = num12hr - 12
-            AmPm = "PM"
         }
 
         return "" + num12hr + AmPm

@@ -1,6 +1,26 @@
 export const defaultWeather = { temp: 65, solar: 110, humidity: 60, wind: 2 };
 export type Weather = typeof defaultWeather;
 
+// Average weather for each month, Jan–Dec, from the bottle and glacier pages' month buttons.
+export const monthlyWeather: { month: string; weather: Weather }[] = [
+    ["Jan", 26.7676, 44.84, 61.0061, 1.4808],
+    ["Feb", 29.2489, 77.3385, 61.7704, 1.8804],
+    ["Mar", 38.3845, 111.4235, 57.8135, 1.9857],
+    ["Apr", 48.4673, 136.0877, 58.3631, 1.9229],
+    ["May", 59.5316, 176.0023, 59.8575, 1.4348],
+    ["Jun", 67.7115, 182.5582, 64.1062, 1.4333],
+    ["Jul", 72.4951, 182.2695, 67.4208, 1.2879],
+    ["Aug", 69.8417, 156.3139, 67.0791, 1.1932],
+    ["Sep", 62.9169, 132.997, 67.6029, 1.0074],
+    ["Oct", 53.0152, 98.9526, 57.714, 1.2221],
+    ["Nov", 40.992, 62.4384, 56.4365, 1.7763],
+    ["Dec", 32.7932, 42.7206, 60.0529, 1.801],
+].map(([month, ...values]) => {
+    // Rounded to one decimal, as the pages do before setting their sliders.
+    const [temp, solar, humidity, wind] = (values as number[]).map((value) => Math.round(value * 10) / 10);
+    return { month: month as string, weather: { temp, solar, humidity, wind } };
+});
+
 // Same coefficients and heating/cooling formula as the bottle page.
 export function predictEnergy({ temp, solar, humidity, wind }: Weather) {
     const intercept = 3897.8722

@@ -79,3 +79,17 @@ export function fakeHourlyRows(now: Date = new Date()): EnergyRow[] {
 
     return rows;
 }
+
+/**
+ * Stands in for one full historical day:
+ *   SELECT * FROM data WHERE time >= '<date>' AND time < '<next day>'
+ *
+ * `date` is a 'YYYY-MM-DD' string. Unlike fakeHourlyRows, a past day is always
+ * complete, so this returns all 24 hours.
+ */
+export function fakeDayRows(date: string): EnergyRow[] {
+    return Array.from({ length: 24 }, (_, hour) => ({
+        time: `${date} ${String(hour).padStart(2, "0")}:00:00`,
+        energyUsed: hourlyUsage(date, hour),
+    }));
+}

@@ -118,3 +118,15 @@
 .textred {
     color: #c62828;
 }
+
+/* Date picker that sits beside the Today / Yesterday buttons */
+.dateinput {
+    border: 1px solid #8b16ca;
+    border-radius: 0.15rem;
+    padding: 0.35rem 0.6rem;
+    font: 500 .825rem/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #8b16ca;
+    background: white;
+    cursor: pointer;
+    margin-top: .5rem;
+}

@@ -49,8 +49,8 @@ export default function EnergyComparison() {
 
   // Show the bottle model's prediction directly at the current slider settings.
   const adjusted = predictEnergy(weather);
-  const axisMaximum = 20000;
-  const axisTicks = Array.from({ length: axisMaximum / 5000 + 1 }, (_, index) => index * 5000);
+  const axisMaximum = 21000;
+  const axisTicks = Array.from({ length: axisMaximum / 3000 + 1 }, (_, index) => index * 3000);
   const data = [
     { name: "Today’s baseline", power: baseline },
     { name: "Adjusted usage", power: adjusted },
@@ -74,7 +74,12 @@ export default function EnergyComparison() {
             <ResponsiveContainer>
               <BarChart data={data} margin={{ top: 10, right: 20, bottom: 10 }} accessibilityLayer>
                 <CartesianGrid vertical={false} className="stroke-gray-200 dark:stroke-gray-800" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 12 }} dy={6} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} height={48} tick={({ x, y, payload }: { x: number; y: number; payload: { value: string } }) => (
+                  <text x={x} y={y + 6} textAnchor="middle" fill="#6b7280" fontSize={12}>
+                    <tspan x={x} dy="0.71em">{payload.value}</tspan>
+                    {payload.value === "Today’s baseline" && <tspan x={x} dy={16} fontSize={11}>Avg Energy Used Today So Far</tspan>}
+                  </text>
+                )} />
                 <YAxis width={80} domain={[0, axisMaximum]} ticks={axisTicks} allowDataOverflow axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 12 }} tickFormatter={formatPower} />
                 <Tooltip cursor={{ fill: "#9ca3af", fillOpacity: 0.1 }} content={({ active, payload }) => active && payload?.length ? (
                   <div className="rounded-md border border-gray-200 bg-white px-4 py-3 text-sm text-black shadow-md">
